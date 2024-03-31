@@ -137,6 +137,8 @@ export const useWeek = () => {
     })}`;
 
     target.end = `${getDate({ date: target.end, format: 'YYYY-MM-DD', add: step })} ${getDate({ date: target.end, format: 'HH:mm' })}`;
+
+    onTaskChange.value?.(target);
   };
 
   return {

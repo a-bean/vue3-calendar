@@ -10,7 +10,7 @@ type TStore = {
 };
 
 const store = ref<TStore>({
-  calendarVisible: ECalendarType.WEEK,
+  calendarVisible: ECalendarType.DAY,
   data: {},
   currentDate: [],
   selectedTaskId: 0,

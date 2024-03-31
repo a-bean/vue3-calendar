@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import { ETaskMoveType, ONE_HOUR_HEIGHT } from '@/config';
 import { getTimeInterval, getDate } from '@/date';
-import { groupSchedulesByOverlap } from '@/utils';
+import { groupSchedulesByOverlap, addLeft } from '@/utils';
 import { useStore } from '@/hooks/useStore';
 
 const MIN_HEIGHT = 15;
@@ -12,7 +12,11 @@ const { store, onTaskChange } = useStore();
 export const useDay = () => {
   const formatData = computed(() => {
     const data = store.value.data?.[store.value.currentDate[0].date] || [];
-    return groupSchedulesByOverlap(data);
+    const copyData = JSON.parse(JSON.stringify(data));
+    addLeft(copyData);
+    console.log('data111', copyData);
+    return copyData;
+    // return groupSchedulesByOverlap(data);
   });
 
   let isDragging = false;
