@@ -125,6 +125,34 @@ export const groupSchedulesByOverlap = (schedules?: TData[]): TData[][] => {
   return result;
 };
 
+export const groupSchedulesByOverlap1 = (schedules?: TData[]): TData[][][] => {
+  const result: TData[][][] = [[[]]];
+
+  if (!schedules?.length) {
+    return result;
+  }
+
+  const insert = (data: TData) => {
+    for (let i = 0; i < result.length; i++) {
+      for (let j = 0; j < result[i].length; j++) {
+        for (let k = 0; k < result[i][j].length; k++) {
+          console.log(data);
+          if (doSchedulesOverlap(data, result[i][j][k])) {
+            console.log('overlap');
+          }
+        }
+      }
+    }
+  };
+
+  result[0][0].push(schedules[0]);
+  for (let i = 1; i < schedules.length; i++) {
+    insert(schedules[i]);
+  }
+  console.log(result);
+  return result;
+};
+
 /**
  * @function : formatWeekTask
  * @description : 格式化数据：将数据按照时间段分组

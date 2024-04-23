@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import { ETaskMoveType, ONE_HOUR_HEIGHT } from '@/config';
 import { getTimeInterval, getDate } from '@/date';
-import { groupSchedulesByOverlap } from '@/utils';
+import { groupSchedulesByOverlap, groupSchedulesByOverlap1 } from '@/utils';
 import { useStore } from '@/hooks/useStore';
 
 const MIN_HEIGHT = 15;
@@ -12,17 +12,7 @@ const { store, onTaskChange } = useStore();
 export const useDay = () => {
   const formatData = computed(() => {
     const data = store.value.data?.[store.value.currentDate[0].date] || [];
-    return groupSchedulesByOverlap(data);
-    // return [
-    //   [
-    //     [{ id: 13, title: '库里', start: '2024-04-23 03:00', end: '2024-04-23 07:00', color: 'purple' }],
-    //     [
-    //       { id: 14, title: '格林', start: '2024-04-23 04:00', end: '2024-04-23 05:00' },
-    //       { id: 15, title: '汤普森', start: '2024-04-23 06:00', end: '2024-04-23 07:00' },
-    //     ],
-    //   ],
-    //   [[{ id: 16, title: '科比', start: '2024-04-23 08:00', end: '2024-04-23 09:00' }]],
-    // ];
+    return groupSchedulesByOverlap1(data);
   });
 
   let isDragging = false;
