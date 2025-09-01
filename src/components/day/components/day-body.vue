@@ -1,17 +1,21 @@
 <template>
   <div ref="bodyRef" class="flex-1 position-relative">
     <TimeDivider @ondblclick="timeDividerDblclick" />
-    <CurrentTimeline class="w100% position-absolute" />
+    <CurrentTimeline class="w100% position-absolute" :show-time="true" />
     <template v-for="(itemss, index) of props.data" :key="index">
-      <template v-for="(items, i) of itemss" :key="i">
-        <template v-for="item of items" :key="item.id">
-          <Popover>
-            <template #trigger>
-              <DayTask :data="item" :style="{ width: `${100 / itemss.length}%`, left: `${i * (100 / itemss.length)}%` }" />
-            </template>
-            <template #default><slot :data="items"></slot></template>
-          </Popover>
-        </template>
+      <template v-for="item of itemss" :key="item.id">
+        <Popover>
+          <template #trigger>
+            <DayTask
+              :data="item"
+              :style="{
+                width: `${item.width || 100}%`,
+                left: `${item.left || 0}%`,
+              }"
+            />
+          </template>
+          <template #default><slot :data="item"></slot></template>
+        </Popover>
       </template>
     </template>
   </div>
@@ -28,7 +32,7 @@ import { useStore } from '@/hooks/useStore';
 
 const { store, addTask } = useStore();
 const props = defineProps<{
-  data: TData[][][];
+  data: TData[][];
 }>();
 
 const { taskBodyHeight } = useDay();

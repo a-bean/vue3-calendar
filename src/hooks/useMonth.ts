@@ -84,6 +84,7 @@ export const useMonth = () => {
   /** 对completeData的数据进行跨日期处理 */
   const formatData = computed(() => {
     const list = cloneDeep(convertTo2DArray<TDate & { dataList: TData[] }>(completeData.value, 7));
+
     for (let i = 0; i < list.length; i++) {
       for (let j = 0; j < list[i].length; j++) {
         const { dataList } = list[i][j];
@@ -109,7 +110,7 @@ export const useMonth = () => {
         }
       }
     }
-    // console.log('list', list);
+    console.log('list', store.value.data);
     return list;
   });
   const onDragStart = (e: DragEvent, data?: TData) => {

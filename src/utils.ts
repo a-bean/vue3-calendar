@@ -91,8 +91,106 @@ const doSchedulesOverlap = (schedule1: TData, schedule2: TData) => {
 };
 
 /**
+ * @function : calculateTaskLayout
+ * @description : 计算重叠任务组中每个任务的位置和宽度
+ * @param {TData[]} tasks
+ * @return {TData[]}
+ */
+const calculateTaskLayout = (tasks: TData[]): TData[] => {
+  if (tasks.length === 1) {
+    return [
+      {
+        ...tasks[0],
+        left: 0,
+        width: 100,
+      },
+    ];
+  }
+
+  // 按开始时间排序
+  const sortedTasks = [...tasks].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
+  // 创建时间线，计算每个时间段的并发数
+  const timeline: { time: number; type: 'start' | 'end'; taskId: number | string }[] = [];
+  sortedTasks.forEach((task) => {
+    timeline.push(
+      { time: new Date(task.start).getTime(), type: 'start', taskId: task.id },
+      { time: new Date(task.end).getTime(), type: 'end', taskId: task.id }
+    );
+  });
+  timeline.sort((a, b) => a.time - b.time);
+
+  // 计算全局最大并发数
+  let maxConcurrency = 0;
+  const currentTasks = new Set<number | string>();
+  timeline.forEach((event) => {
+    if (event.type === 'start') {
+      currentTasks.add(event.taskId);
+    } else {
+      currentTasks.delete(event.taskId);
+    }
+    maxConcurrency = Math.max(maxConcurrency, currentTasks.size);
+  });
+
+  // 为每个任务分配位置
+  const result: TData[] = [];
+  const taskPositions: { [key: string]: number } = {};
+
+  console.log('=== 任务布局计算 ===');
+  console.log('任务数量:', sortedTasks.length);
+  console.log('全局最大并发数:', maxConcurrency);
+
+  // 按开始时间顺序分配位置
+  sortedTasks.forEach((task) => {
+    const taskId = task.id.toString();
+
+    // 找到与当前任务重叠的其他任务
+    const overlappingTasks = sortedTasks.filter((otherTask) => otherTask.id !== task.id && doSchedulesOverlap(task, otherTask));
+
+    // 找到已分配位置的重叠任务
+    const usedPositions = new Set<number>();
+    overlappingTasks.forEach((otherTask) => {
+      const otherPosition = taskPositions[otherTask.id.toString()];
+      if (otherPosition !== undefined) {
+        usedPositions.add(otherPosition);
+      }
+    });
+
+    // 分配位置：找到第一个可用位置
+    let position = 0;
+    while (usedPositions.has(position)) {
+      position++;
+    }
+
+    taskPositions[taskId] = position;
+
+    // 计算宽度 - 使用全局最大并发数
+    const width = 100 / maxConcurrency;
+
+    console.log(`任务 ${task.title} (${taskId}):`, {
+      start: task.start,
+      end: task.end,
+      position,
+      width,
+      left: position * width,
+      overlappingTasks: overlappingTasks.map((t) => t.title),
+    });
+
+    result.push({
+      ...task,
+      left: position * width,
+      width,
+    });
+  });
+
+  console.log('=== 布局计算完成 ===');
+
+  return result;
+};
+
+/**
  * @function : groupSchedulesByOverlap
- * @description : 将重叠的任务分组
+ * @description : 将重叠的任务分组，并计算每个任务的位置和宽度
  * @param {TData[]} schedules
  * @return {TData[][]}
  */
@@ -103,53 +201,31 @@ export const groupSchedulesByOverlap = (schedules?: TData[]): TData[][] => {
     return result;
   }
 
-  for (let i = 0; i < schedules.length; i++) {
+  // 按开始时间排序
+  const sortedSchedules = [...schedules].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+
+  for (let i = 0; i < sortedSchedules.length; i++) {
     const resultIds = result.flat().map((item) => item.id);
-    if (resultIds.includes(schedules[i].id)) {
+    if (resultIds.includes(sortedSchedules[i].id)) {
       continue;
     }
 
-    const arr: TData[] = [schedules[i]];
-    for (let j = i + 1; j < schedules.length; j++) {
-      if (resultIds.includes(schedules[j].id)) {
+    const arr: TData[] = [sortedSchedules[i]];
+    for (let j = i + 1; j < sortedSchedules.length; j++) {
+      if (resultIds.includes(sortedSchedules[j].id)) {
         continue;
       }
 
-      const overlappingSchedule = arr.some((item) => doSchedulesOverlap(item, schedules[j]));
+      const overlappingSchedule = arr.some((item) => doSchedulesOverlap(item, sortedSchedules[j]));
       if (overlappingSchedule) {
-        arr.push(schedules[j]);
+        arr.push(sortedSchedules[j]);
       }
     }
-    result.push(arr);
+
+    // 计算每个任务的位置和宽度
+    const groupWithLayout = calculateTaskLayout(arr);
+    result.push(groupWithLayout);
   }
-  return result;
-};
-
-export const groupSchedulesByOverlap1 = (schedules?: TData[]): TData[][][] => {
-  const result: TData[][][] = [[[]]];
-
-  if (!schedules?.length) {
-    return result;
-  }
-
-  const insert = (data: TData) => {
-    for (let i = 0; i < result.length; i++) {
-      for (let j = 0; j < result[i].length; j++) {
-        for (let k = 0; k < result[i][j].length; k++) {
-          console.log(data);
-          if (doSchedulesOverlap(data, result[i][j][k])) {
-            console.log('overlap');
-          }
-        }
-      }
-    }
-  };
-
-  result[0][0].push(schedules[0]);
-  for (let i = 1; i < schedules.length; i++) {
-    insert(schedules[i]);
-  }
-  console.log(result);
   return result;
 };
 

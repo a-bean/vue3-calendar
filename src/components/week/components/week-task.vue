@@ -81,9 +81,23 @@ const height = computed(() => {
 <style>
 .day-task {
   @apply w100% bg-blue font-size-3 color-white box-border position-absolute p1;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.day-task:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
 }
 
 .day-drag-line {
   @apply h3 w100% position-absolute cursor-row-resize;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.day-task:hover .day-drag-line {
+  opacity: 1;
 }
 </style>

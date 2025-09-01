@@ -1,10 +1,14 @@
 <template>
-  <div class="current-timeline" :style="{ top: `${top}%` }">{{ time }}</div>
+  <div class="current-timeline" :style="{ top: `${top}%` }">{{ props.showTime ? time : '' }}</div>
 </template>
 <script setup lang="ts">
 import { onUnmounted, ref, onMounted } from 'vue';
 import { getDate } from '@/date';
 import { ONE_HOUR_HEIGHT } from '@/config';
+
+const props = defineProps<{
+  showTime?: boolean;
+}>();
 
 const time = ref(getDate({ format: 'HH:mm' }));
 
@@ -33,6 +37,6 @@ onUnmounted(() => {
 
 <style>
 .current-timeline {
-  @apply h1px bg-red font-size-2 text-right;
+  @apply h1px bg-red font-size-2 text-left;
 }
 </style>

@@ -12,17 +12,24 @@
 import { ref } from 'vue';
 import Calendar from '@/index.vue';
 import { TData } from '@/types';
+import dayjs from 'dayjs';
+
+const tempDataKeys = dayjs().format('YYYY-MM-DD');
 
 const data = ref<{ [key: string]: TData[] }>({});
 const getDateScope = (scope: [string, string]) => {
-  // TODO:根据scope请求数据
+  // TODO:根据scope请求数据·
   console.log('所展示的时间:', scope);
   data.value = {
-    '2024-04-23': [
-      { id: 13, title: '库里', start: '2024-04-23 03:00', end: '2024-04-23 07:00', color: 'purple' },
-      { id: 14, title: '格林', start: '2024-04-23 04:00', end: '2024-04-23 05:00' },
-      { id: 15, title: '汤普森', start: '2024-04-23 06:00', end: '2024-04-23 07:00' },
-      { id: 16, title: '科比', start: '2024-04-23 08:00', end: '2024-04-23 09:00' },
+    [tempDataKeys]: [
+      { id: 13, title: '库里', start: `${tempDataKeys} 03:00`, end: `${tempDataKeys} 07:00`, color: '#8B5CF6' },
+      { id: 14, title: '格林', start: `${tempDataKeys} 04:00`, end: `${tempDataKeys} 05:00`, color: '#10B981' },
+      { id: 15, title: '汤普森', start: `${tempDataKeys} 06:00`, end: `${tempDataKeys} 07:00`, color: '#F59E0B' },
+      { id: 16, title: '科比', start: `${tempDataKeys} 08:00`, end: `${tempDataKeys} 09:00`, color: '#EF4444' },
+      // 添加更多重叠任务来测试排布
+      { id: 17, title: '詹姆斯', start: `${tempDataKeys} 04:30`, end: `${tempDataKeys} 05:30`, color: '#3B82F6' },
+      { id: 18, title: '杜兰特', start: `${tempDataKeys} 05:00`, end: `${tempDataKeys} 06:00`, color: '#EC4899' },
+      { id: 19, title: '哈登', start: `${tempDataKeys} 05:30`, end: `${tempDataKeys} 06:30`, color: '#06B6D4' },
     ],
   };
 };
