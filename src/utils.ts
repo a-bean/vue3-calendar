@@ -107,8 +107,15 @@ const calculateTaskLayout = (tasks: TData[]): TData[] => {
     ];
   }
 
-  // 按开始时间排序
-  const sortedTasks = [...tasks].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+  // 按开始时间排序，如果时间相同则按ID排序以保持稳定顺序
+  const sortedTasks = [...tasks].sort((a, b) => {
+    const timeDiff = new Date(a.start).getTime() - new Date(b.start).getTime();
+    if (timeDiff === 0) {
+      // 如果时间相同，按ID排序以保持稳定顺序
+      return Number(a.id) - Number(b.id);
+    }
+    return timeDiff;
+  });
 
   // 创建时间线，计算每个时间段的并发数
   const timeline: { time: number; type: 'start' | 'end'; taskId: number | string }[] = [];
@@ -136,10 +143,6 @@ const calculateTaskLayout = (tasks: TData[]): TData[] => {
   const result: TData[] = [];
   const taskPositions: { [key: string]: number } = {};
 
-  console.log('=== 任务布局计算 ===');
-  console.log('任务数量:', sortedTasks.length);
-  console.log('全局最大并发数:', maxConcurrency);
-
   // 按开始时间顺序分配位置
   sortedTasks.forEach((task) => {
     const taskId = task.id.toString();
@@ -156,10 +159,34 @@ const calculateTaskLayout = (tasks: TData[]): TData[] => {
       }
     });
 
-    // 分配位置：找到第一个可用位置
+    // 分配位置：优先保持任务在重叠组中的相对位置
     let position = 0;
-    while (usedPositions.has(position)) {
-      position++;
+
+    // 如果任务已经有位置信息，尝试保持该位置
+    if (task.left !== undefined) {
+      const preferredPosition = Math.round(task.left / (100 / maxConcurrency));
+      if (!usedPositions.has(preferredPosition)) {
+        position = preferredPosition;
+      } else {
+        // 如果首选位置被占用，找到最接近的可用位置
+        let minDistance = Infinity;
+        let bestPosition = 0;
+        for (let i = 0; i < maxConcurrency; i++) {
+          if (!usedPositions.has(i)) {
+            const distance = Math.abs(i - preferredPosition);
+            if (distance < minDistance) {
+              minDistance = distance;
+              bestPosition = i;
+            }
+          }
+        }
+        position = bestPosition;
+      }
+    } else {
+      // 如果没有位置信息，找到第一个可用位置
+      while (usedPositions.has(position)) {
+        position++;
+      }
     }
 
     taskPositions[taskId] = position;
@@ -167,23 +194,12 @@ const calculateTaskLayout = (tasks: TData[]): TData[] => {
     // 计算宽度 - 使用全局最大并发数
     const width = 100 / maxConcurrency;
 
-    console.log(`任务 ${task.title} (${taskId}):`, {
-      start: task.start,
-      end: task.end,
-      position,
-      width,
-      left: position * width,
-      overlappingTasks: overlappingTasks.map((t) => t.title),
-    });
-
     result.push({
       ...task,
       left: position * width,
       width,
     });
   });
-
-  console.log('=== 布局计算完成 ===');
 
   return result;
 };
@@ -201,8 +217,15 @@ export const groupSchedulesByOverlap = (schedules?: TData[]): TData[][] => {
     return result;
   }
 
-  // 按开始时间排序
-  const sortedSchedules = [...schedules].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+  // 按开始时间排序，如果时间相同则按ID排序以保持稳定顺序
+  const sortedSchedules = [...schedules].sort((a, b) => {
+    const timeDiff = new Date(a.start).getTime() - new Date(b.start).getTime();
+    if (timeDiff === 0) {
+      // 如果时间相同，按ID排序以保持稳定顺序
+      return Number(a.id) - Number(b.id);
+    }
+    return timeDiff;
+  });
 
   for (let i = 0; i < sortedSchedules.length; i++) {
     const resultIds = result.flat().map((item) => item.id);

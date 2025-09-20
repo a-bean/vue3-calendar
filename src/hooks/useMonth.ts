@@ -110,7 +110,6 @@ export const useMonth = () => {
         }
       }
     }
-    console.log('list', store.value.data);
     return list;
   });
   const onDragStart = (e: DragEvent, data?: TData) => {
@@ -146,7 +145,6 @@ export const useMonth = () => {
       smallDate: getDate({ date: dragData.targetTask!.start, format: 'YYYY-MM-DD' }),
       unit: 'day',
     });
-    console.log('interval', interval);
     /** 鼠标点击的位置离这条task的start的偏移天数 */
     const clickOffset = interval + dragData.offset;
 

@@ -42,36 +42,39 @@ export const useWeek = () => {
   const mousemove = (e: MouseEvent) => {
     if (!isDragging) return;
 
-    // 滑动后调整开始或者结束时间，将时间的 分钟 总是调整为15的的倍数
-    let target: TData;
-    for (const dataKey in store.value.data) {
-      if (!Object.prototype.hasOwnProperty.call(store.value.data, dataKey)) continue;
-      // eslint-disable-next-line no-loop-func
-      const targetData = store.value.data[dataKey].find((item) => item.id === targetId);
-      if (targetData) {
-        target = targetData;
-        break;
+    // 使用 requestAnimationFrame 优化性能
+    requestAnimationFrame(() => {
+      // 滑动后调整开始或者结束时间，将时间的 分钟 总是调整为15的的倍数
+      let target: TData;
+      for (const dataKey in store.value.data) {
+        if (!Object.prototype.hasOwnProperty.call(store.value.data, dataKey)) continue;
+        // eslint-disable-next-line no-loop-func
+        const targetData = store.value.data[dataKey].find((item) => item.id === targetId);
+        if (targetData) {
+          target = targetData;
+          break;
+        }
       }
-    }
 
-    const everyPxOfMinute = 60 / (taskBodyHeight.value * (ONE_HOUR_HEIGHT / 100));
-    const incrementalTime = everyPxOfMinute * (e.clientY - initialY);
+      const everyPxOfMinute = 60 / (taskBodyHeight.value * (ONE_HOUR_HEIGHT / 100));
+      const incrementalTime = everyPxOfMinute * (e.clientY - initialY);
 
-    const timesDiff = getTimeInterval({ bigDate: target!.end, smallDate: target!.start, unit: 'minute' });
-    if (timesDiff <= MIN_HEIGHT && e.clientY > initialY && moveType === ETaskMoveType.MOVE_TOP) return;
-    if (timesDiff <= MIN_HEIGHT && e.clientY < initialY && moveType === ETaskMoveType.MOVE_BOTTOM) return;
+      const timesDiff = getTimeInterval({ bigDate: target!.end, smallDate: target!.start, unit: 'minute' });
+      if (timesDiff <= MIN_HEIGHT && e.clientY > initialY && moveType === ETaskMoveType.MOVE_TOP) return;
+      if (timesDiff <= MIN_HEIGHT && e.clientY < initialY && moveType === ETaskMoveType.MOVE_BOTTOM) return;
 
-    const adjustTime = (prop: 'start' | 'end') => {
-      target[prop] = getDate({ date: target[prop], add: incrementalTime, type: 'minute', format: 'YYYY-MM-DD HH:mm' });
-    };
-    if (moveType === ETaskMoveType.MOVE_TOP || moveType === ETaskMoveType.MOVE_WHOLE) {
-      adjustTime('start');
-    }
-    if (moveType === ETaskMoveType.MOVE_BOTTOM || moveType === ETaskMoveType.MOVE_WHOLE) {
-      adjustTime('end');
-    }
+      const adjustTime = (prop: 'start' | 'end') => {
+        target[prop] = getDate({ date: target[prop], add: incrementalTime, type: 'minute', format: 'YYYY-MM-DD HH:mm' });
+      };
+      if (moveType === ETaskMoveType.MOVE_TOP || moveType === ETaskMoveType.MOVE_WHOLE) {
+        adjustTime('start');
+      }
+      if (moveType === ETaskMoveType.MOVE_BOTTOM || moveType === ETaskMoveType.MOVE_WHOLE) {
+        adjustTime('end');
+      }
 
-    initialY = e.clientY;
+      initialY = e.clientY;
+    });
   };
 
   const mouseup = () => {

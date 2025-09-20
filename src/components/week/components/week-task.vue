@@ -83,7 +83,8 @@ const height = computed(() => {
   @apply w100% bg-blue font-size-3 color-white box-border position-absolute p1;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
+  /* 移除影响位置变化的动画，只保留阴影和透明度动画 */
+  transition: box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
 .day-task:hover {

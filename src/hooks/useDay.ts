@@ -27,26 +27,29 @@ export const useDay = () => {
   const mousemove = (e: MouseEvent) => {
     if (!isDragging) return;
 
-    const { date } = store.value.currentDate[0];
-    const target = store.value.data[date].find((item) => item.id === targetId)!;
-    const everyPxOfMinute = 60 / (taskBodyHeight.value * (ONE_HOUR_HEIGHT / 100));
-    const incrementalTime = everyPxOfMinute * (e.clientY - initialY);
+    // 使用 requestAnimationFrame 优化性能
+    requestAnimationFrame(() => {
+      const { date } = store.value.currentDate[0];
+      const target = store.value.data[date].find((item) => item.id === targetId)!;
+      const everyPxOfMinute = 60 / (taskBodyHeight.value * (ONE_HOUR_HEIGHT / 100));
+      const incrementalTime = everyPxOfMinute * (e.clientY - initialY);
 
-    const timesDiff = getTimeInterval({ bigDate: target.end, smallDate: target.start, unit: 'minute' });
-    if (timesDiff <= MIN_HEIGHT && e.clientY > initialY && moveType === ETaskMoveType.MOVE_TOP) return;
-    if (timesDiff <= MIN_HEIGHT && e.clientY < initialY && moveType === ETaskMoveType.MOVE_BOTTOM) return;
+      const timesDiff = getTimeInterval({ bigDate: target.end, smallDate: target.start, unit: 'minute' });
+      if (timesDiff <= MIN_HEIGHT && e.clientY > initialY && moveType === ETaskMoveType.MOVE_TOP) return;
+      if (timesDiff <= MIN_HEIGHT && e.clientY < initialY && moveType === ETaskMoveType.MOVE_BOTTOM) return;
 
-    const adjustTime = (prop: 'start' | 'end') => {
-      target[prop] = getDate({ date: target[prop], add: incrementalTime, type: 'minute', format: 'YYYY-MM-DD HH:mm' });
-    };
-    if (moveType === ETaskMoveType.MOVE_TOP || moveType === ETaskMoveType.MOVE_WHOLE) {
-      adjustTime('start');
-    }
-    if (moveType === ETaskMoveType.MOVE_BOTTOM || moveType === ETaskMoveType.MOVE_WHOLE) {
-      adjustTime('end');
-    }
+      const adjustTime = (prop: 'start' | 'end') => {
+        target[prop] = getDate({ date: target[prop], add: incrementalTime, type: 'minute', format: 'YYYY-MM-DD HH:mm' });
+      };
+      if (moveType === ETaskMoveType.MOVE_TOP || moveType === ETaskMoveType.MOVE_WHOLE) {
+        adjustTime('start');
+      }
+      if (moveType === ETaskMoveType.MOVE_BOTTOM || moveType === ETaskMoveType.MOVE_WHOLE) {
+        adjustTime('end');
+      }
 
-    initialY = e.clientY;
+      initialY = e.clientY;
+    });
   };
 
   const mouseup = () => {
@@ -70,7 +73,19 @@ export const useDay = () => {
     }
     // 如果时间有变化，触发回调
     if (oldDate.start !== target.start || oldDate.end !== target.end) {
+      // 保持任务的位置信息，避免重新计算时位置变化
+      const currentPosition = target.left;
+      const currentWidth = target.width;
+
       onTaskChange.value?.(target);
+
+      // 恢复位置信息
+      if (currentPosition !== undefined) {
+        target.left = currentPosition;
+      }
+      if (currentWidth !== undefined) {
+        target.width = currentWidth;
+      }
     }
 
     window.removeEventListener('mouseup', mouseup);
