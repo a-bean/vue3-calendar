@@ -19,7 +19,7 @@ export default defineConfig(({ command }) => {
           entry: path.resolve(__dirname, 'src/index.ts'),
           name: 'CalendarVue',
           fileName: (format) => `calendar-vue.${format}.js`,
-          formats: ['es', 'umd'],
+          formats: ['es'],
         },
         rollupOptions: {
           external: ['vue'],

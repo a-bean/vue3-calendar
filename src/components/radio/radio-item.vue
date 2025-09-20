@@ -17,6 +17,6 @@ const attrs = useAttrs();
 
 <style>
 .radio-group-item {
-  @apply h3 w16 border-rd-0.8 p-b1 p-t1 text-center line-height-3 active:bg-#e6e6e6 hover:bg-gray;
+  @apply w16 border-rd-0.8 text-center active:bg-#e6e6e6 hover:bg-gray;
 }
 </style>

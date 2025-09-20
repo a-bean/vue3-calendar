@@ -1,6 +1,6 @@
 {
   "name": "@abean/calendar.vue3",
-  "version": "0.0.3",
+  "version": "0.0.8",
   "description": "A calendar component for Vue 3 with day, week, month and year views",
   "keywords": [
     "vue",

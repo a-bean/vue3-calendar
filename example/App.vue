@@ -1,5 +1,5 @@
 <template>
-  <div class="h80vh w90vw">
+  <div style="height: 80vh; width: 90vw">
     <h1>测试打包后的组件</h1>
     <p>这个页面使用打包后的组件，验证样式和功能是否正常</p>
 
@@ -13,8 +13,9 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
-import { Calendar } from '../dist/calendar-vue.es';
+// import { Calendar } from '../dist/calendar-vue.es';
 import '../dist/style.css';
+import Calendar from '../src/index.vue';
 import { TData } from '../src/types';
 import dayjs from 'dayjs';
 

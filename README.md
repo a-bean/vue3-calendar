@@ -16,6 +16,14 @@ A smart calendar component for Vue 3 with day, week, month and year views.
 npm install @abean/calendar.vue3
 ```
 
+## Important: Style Import
+
+⚠️ **You MUST import the CSS file for the component to display correctly:**
+
+```javascript
+import '@abean/calendar.vue3/dist/style.css';
+```
+
 ## Usage
 
 ### Basic Usage
