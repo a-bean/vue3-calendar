@@ -40,7 +40,7 @@ export type TYearDate = {
   month: string;
 };
 
-/** 1:日 2:周 3:月 4:年 */
+/** 1:day 2:week 3:month 4:year */
 export enum ECalendarType {
   DAY = 'day',
   WEEK = 'week',

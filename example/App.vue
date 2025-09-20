@@ -1,5 +1,8 @@
 <template>
   <div class="h80vh w90vw">
+    <h1>测试打包后的组件</h1>
+    <p>这个页面使用打包后的组件，验证样式和功能是否正常</p>
+
     <Calendar v-slot="slotProps" :data="data" @get-date-scope="getDateScope" @change="onChange" @delete="onDelete">
       <!-- 用的人自己写吧。这个详情组件定制化程度很高，而且这边还需要用到日期选择器，时间选择器，每个项目都可能在其他地方已经引入了，为了样式统一等原因全部交由使用者自己来写-->
       <div class="h400px w400px bg-[#FFF] shadow-[0px_4px_10px_0px_rgba(0,0,0,0.10)] p4 rd-2">
@@ -10,15 +13,15 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
-import Calendar from '@/index.vue';
-import { TData } from '@/types';
+import { Calendar } from '../dist/calendar-vue.es';
+import '../dist/style.css';
+import { TData } from '../src/types';
 import dayjs from 'dayjs';
 
 const tempDataKeys = dayjs().format('YYYY-MM-DD');
 
 const data = ref<{ [key: string]: TData[] }>({});
 const getDateScope = (scope: [string, string]) => {
-  // TODO:根据scope请求数据·
   console.log('所展示的时间:', scope);
   data.value = {
     [tempDataKeys]: [

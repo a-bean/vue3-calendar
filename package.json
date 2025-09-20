@@ -1,6 +1,23 @@
 {
-  "name": "smart-calendar.vue",
-  "version": "0.0.0",
+  "name": "@abean/calendar.vue3",
+  "version": "0.0.3",
+  "description": "A calendar component for Vue 3 with day, week, month and year views",
+  "keywords": [
+    "vue",
+    "vue3",
+    "calendar",
+    "component",
+    "typescript",
+    "vite"
+  ],
+  "author": "abean",
+  "license": "MIT",
+  "main": "dist/calendar-vue.umd.js",
+  "module": "dist/calendar-vue.es.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "prepare": "node ./.husky/prepare.js",
@@ -9,19 +26,17 @@
     "commit": "git cz",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "build:lib": "vue-tsc --noEmit && BUILD_MODE=lib vite build && vue-tsc --declaration --emitDeclarationOnly --outDir dist && rm -rf dist/components dist/hooks dist/config.d.ts dist/date.d.ts dist/index.vue.d.ts dist/types.d.ts dist/utils.d.ts",
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build:lib"
+  },
+  "peerDependencies": {
+    "vue": "^3.0.0"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.202",
-    "@vitejs/plugin-vue": "^4.2.3",
-    "@vitejs/plugin-vue-jsx": "^3.0.1",
     "dayjs": "^1.11.10",
     "lodash": "^4.17.21",
-    "lunisolar": "^2.4.0",
-    "typescript": "^4.9.5",
-    "vite": "^4.3.9",
-    "vue": "^3.3.4",
-    "vue-tsc": "^1.2.0"
+    "lunisolar": "^2.4.0"
   },
   "lint-staged": {
     "*.{js,ts,vue}": [
@@ -34,10 +49,13 @@
     "@commitlint/cli": "^16.3.0",
     "@commitlint/config-conventional": "^16.2.4",
     "@iconify-json/material-symbols": "^1.1.69",
+    "@types/lodash": "^4.14.202",
     "@types/node": "^17.0.45",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
     "@typescript-eslint/parser": "^5.55.0",
     "@unocss/preset-icons": "^0.58.3",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "@vitejs/plugin-vue-jsx": "^3.0.1",
     "@vue/runtime-core": "^3.3.4",
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
@@ -52,13 +70,17 @@
     "husky": "^7.0.4",
     "lint-staged": "^12.5.0",
     "prettier": "^2.8.4",
+    "typescript": "^4.9.5",
     "unocss": "^0.58.0",
     "unplugin-auto-import": "^0.11.5",
     "unplugin-vue-components": "^0.22.12",
+    "vite": "^4.3.9",
     "vite-plugin-ali-oss": "^1.0.8",
     "vite-plugin-chunk-split": "^0.4.7",
     "vite-plugin-tencent-oss": "^0.0.7",
-    "vue-eslint-parser": "^8.3.0"
+    "vue": "^3.3.4",
+    "vue-eslint-parser": "^8.3.0",
+    "vue-tsc": "^1.2.0"
   },
   "config": {
     "commitizen": {
