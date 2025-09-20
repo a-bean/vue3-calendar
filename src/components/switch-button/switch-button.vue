@@ -1,11 +1,11 @@
 <template>
   <div class="switch-container">
     <div class="switch-btn" @click="emitter(EEvents.change, -1)">
-      <div class="chevron-icon">‹</div>
+      <div>‹</div>
     </div>
     <div class="switch-btn switch-btn-today" @click="emitter(EEvents.recover)">今天</div>
-    <div class="switch-btn">
-      <div class="chevron-icon" @click="emitter(EEvents.change, +1)">›</div>
+    <div class="switch-btn" @click="emitter(EEvents.change, 1)">
+      <div>›</div>
     </div>
   </div>
 </template>
