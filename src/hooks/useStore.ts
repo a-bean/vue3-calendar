@@ -4,13 +4,13 @@ import { getDaysScope, getDate } from '@/date';
 
 type TStore = {
   data: { [key: string]: TData[] };
-  calendarVisible: ECalendarType;
+  calendarView: ECalendarType;
   currentDate: TDate[];
   selectedTaskId: number;
 };
 
 const store = ref<TStore>({
-  calendarVisible: ECalendarType.DAY,
+  calendarView: ECalendarType.DAY,
   data: {},
   currentDate: [],
   selectedTaskId: 0,
@@ -29,7 +29,7 @@ export const useStore = () => {
 
   const onRecover = () => {
     store.value.currentDate = getDaysScope({
-      type: store.value.calendarVisible,
+      type: store.value.calendarView,
       date: new Date(),
     });
     currentDay.value = getDate({ date: new Date() });
@@ -38,7 +38,7 @@ export const useStore = () => {
   const onChange = (value: number) => {
     console.log('onChange', value);
     store.value.currentDate = getDaysScope({
-      type: store.value.calendarVisible,
+      type: store.value.calendarView,
       date: store.value.currentDate[0].date,
       add: value,
     });

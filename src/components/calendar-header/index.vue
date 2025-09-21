@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex flex-items-center justify-center">
-      <RadioGroup v-model:model-value="store.calendarVisible">
+      <RadioGroup v-model:model-value="store.calendarView">
         <Radio v-for="(value, key) of typeMap" :key="key" :value="key"> {{ value }} </Radio>
       </RadioGroup>
     </div>
@@ -42,6 +42,6 @@ const titleMap = {
 const timeTitle = computed(() => {
   const item = store.value.currentDate[0];
   if (!item?.date) return '';
-  return titleMap[store.value.calendarVisible](item.date);
+  return titleMap[store.value.calendarView](item.date);
 });
 </script>

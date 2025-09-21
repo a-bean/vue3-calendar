@@ -49,7 +49,7 @@ const components = {
   [ECalendarType.MONTH]: MonthCalendar,
   [ECalendarType.YEAR]: YearCalendar,
 };
-const showComponent = computed(() => components[store.value.calendarVisible]);
+const showComponent = computed(() => components[store.value.calendarView]);
 
 /*
   [key in Exclude<ECalendarType, ECalendarType.YEAR>]
@@ -73,14 +73,14 @@ const emitterFn: { [key in ECalendarType]: () => void } = {
 watch(
   () => store.value.currentDate,
   () => {
-    emitterFn[store.value.calendarVisible]();
+    emitterFn[store.value.calendarView]();
   }
 );
 
 watch(
-  () => store.value.calendarVisible,
+  () => store.value.calendarView,
   () => {
-    store.value.currentDate = getDaysScope({ type: store.value.calendarVisible, date: currentDay.value });
+    store.value.currentDate = getDaysScope({ type: store.value.calendarView, date: currentDay.value });
   },
   {
     immediate: true,
