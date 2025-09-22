@@ -40,7 +40,6 @@ export const useStore = () => {
   };
 
   const onChange = (value: number) => {
-    console.log('onChange', value);
     store.value.currentDate = getDaysScope({
       type: store.value.calendarView,
       date: store.value.currentDate[0].date,

@@ -6,11 +6,16 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed } from 'vue';
 import YearMonth from './components/year-month.vue';
-import { getYearDates } from '@/date';
+import { useStore } from '@/hooks/useStore';
+import { groupDatesByMonth } from '@/date';
 
-const yearDates = ref(getYearDates());
+const { store } = useStore();
+
+const yearDates = computed(() => {
+  return groupDatesByMonth(store.value.currentDate);
+});
 </script>
 <style>
 .year {

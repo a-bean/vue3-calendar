@@ -40,6 +40,7 @@ export const useMonth = () => {
       const date = getDate({ date: newDays[0].date, add: -1 });
       newDays.unshift({
         date,
+        day: date.slice(-2),
         weekIndex: newDays[0].weekIndex - 1,
         week: weeks[getWeekIndex(newDays[0].date, -1)],
         isCurrentMonth: false,
@@ -56,6 +57,7 @@ export const useMonth = () => {
       const date = getDate({ date: newDays[newDays.length - 1].date, add: 1 });
       newDays.push({
         date,
+        day: date.slice(-2),
         weekIndex: newDays[newDays.length - 1].weekIndex + 1,
         week: weeks[getWeekIndex(newDays[newDays.length - 1].date, 1)],
         isCurrentMonth: false,

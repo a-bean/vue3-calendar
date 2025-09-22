@@ -89,6 +89,15 @@ export const getLunarMonth = (date: ConfigType) => {
 };
 
 /**
+ * @description: 获取某一天的月份(中文)
+ * @param date ConfigType 公历日期
+ * @returns string 月份
+ */
+export const getChineseMonth = (date: ConfigType) => {
+  return months[Number(dayjs(date).format('MM')) - 1];
+};
+
+/**
  * @description: 格式化周日期
  * @param {string[]} days
  * @return {*}
@@ -97,6 +106,7 @@ const formatDays = (days: string[]): TDate[] => {
   return days.map((item) => {
     return {
       date: item,
+      day: item.slice(-2),
       weekIndex: getWeekIndex(item),
       week: weeks[getWeekIndex(item)],
       isToday: item === getDate(),
@@ -113,7 +123,7 @@ const formatDays = (days: string[]): TDate[] => {
 /**
  * @function getDaysScope
  * @description: 获取某一天（默认为当前日期）当前周一周的日期/当前月的日期
- * @param {{ type?: 'week' | 'month'; day?: ConfigType; add?: number }} params
+ * @param {{ type?: 'day'|'week' | 'month'|'year'; day?: ConfigType; add?: number }} params
  * @return {TDate[]}
  */
 export const getDaysScope = (params: { type?: ManipulateType; date?: ConfigType; add?: number } = {}): TDate[] => {
@@ -207,4 +217,34 @@ export const getYearDates = (offset = 0): TYearDate[][] => {
  */
 export const isBefore = (beforeDate: ConfigType, afterDate: ConfigType): boolean => {
   return dayjs(beforeDate).isBefore(afterDate);
+};
+
+/**
+ * @description: 按年月分组
+ * @param {TDate[]} list
+ * @returns {TDate[][]}
+ */
+export const groupDatesByMonth = (list: TDate[]): TDate[][] => {
+  // 按年月分组
+  const monthGroups = new Map<string, TDate[]>();
+
+  for (const item of list) {
+    const [year, month] = item.date.split('-');
+    const monthKey = `${year}-${month}`;
+
+    if (!monthGroups.has(monthKey)) {
+      monthGroups.set(monthKey, []);
+    }
+
+    monthGroups.get(monthKey)!.push(item);
+  }
+
+  // 将分组后的数据转换为数组，并按月份排序
+  const resList = Array.from(monthGroups.values()).sort((a, b) => {
+    const [yearA, monthA] = a[0].date.split('-');
+    const [yearB, monthB] = b[0].date.split('-');
+    return parseInt(yearA, 10) - parseInt(yearB, 10) || parseInt(monthA, 10) - parseInt(monthB, 10);
+  });
+
+  return resList;
 };

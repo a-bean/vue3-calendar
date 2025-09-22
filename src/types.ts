@@ -6,7 +6,8 @@ export type TDataInfo = {
 
 export type TDate = {
   date: string;
-  day?: string;
+  day: string;
+  month?: string;
   lunarDay: string;
   lunarMonth: string;
   week: string;

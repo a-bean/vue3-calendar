@@ -1,6 +1,6 @@
 <template>
   <div class="year-month">
-    <div class="year-month-title">{{ props.data[0].month }}</div>
+    <div class="year-month-title">{{ getChineseMonth(props.data[0].date) }}</div>
     <div class="year-month-body">
       <div class="year-month-header">
         <div v-for="item of weeks" :key="item" class="year-month-header-item">
@@ -19,7 +19,7 @@
               'bg-red color-white b-rd-50%': item.isToday,
             }"
           >
-            {{ item.day.startsWith('0') ? item.day.slice(-1) : item.day }}
+            {{ item.day?.startsWith('0') ? item.day.slice(-1) : item.day }}
           </div>
         </div>
       </div>
@@ -28,16 +28,16 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue';
-import { getDate, getLunarDay, weeks } from '@/date';
+import { getDate, getLunarDay, getLunarMonth, getChineseMonth, weeks, getWeekIndex } from '@/date';
 import { convertTo2DArray } from '@/utils';
-import { TYearDate } from '@/types';
+import { TDate } from '@/types';
 import { cloneDeep } from 'lodash';
 
 const props = defineProps<{
-  data: TYearDate[];
+  data: TDate[];
 }>();
 
-const replenishCurrentDays = computed((): TYearDate[][] => {
+const replenishCurrentDays = computed((): TDate[][] => {
   if (!props.data.length) return [];
   const newDays = cloneDeep(props.data);
 
@@ -49,26 +49,37 @@ const replenishCurrentDays = computed((): TYearDate[][] => {
       day: date.slice(-2),
       month: newDays[0].month,
       weekIndex: newDays[0].weekIndex - 1,
+      week: weeks[getWeekIndex(newDays[0].date)],
       isCurrentMonth: false,
       isToday: false,
       isFirstDayOfLunarMonth: getLunarDay(date) === '初一',
+      lunarDay: getLunarDay(date),
+      lunarMonth: getLunarMonth(date),
+      isFirstDayOfMonth: false,
+      isSaturdayOrSunday: newDays[0].weekIndex - 1 === 0 || newDays[0].weekIndex - 1 === 6,
     });
   }
   // 补全后面的日期
   while (newDays.length < 42) {
     const date = getDate({ date: newDays[newDays.length - 1].date, add: 1 });
+    const weekIndex = (newDays[newDays.length - 1].weekIndex + 1) % 7;
     newDays.push({
       date,
       day: date.slice(-2),
       month: newDays[0].month,
-      weekIndex: newDays[newDays.length - 1].weekIndex + 1,
+      weekIndex,
+      week: weeks[getWeekIndex(date)],
       isCurrentMonth: false,
       isToday: false,
       isFirstDayOfLunarMonth: getLunarDay(date) === '初一',
+      lunarDay: getLunarDay(date),
+      lunarMonth: getLunarMonth(date),
+      isFirstDayOfMonth: false,
+      isSaturdayOrSunday: weekIndex === 0 || weekIndex === 6,
     });
   }
 
-  return convertTo2DArray<TYearDate>(newDays, 7);
+  return convertTo2DArray<TDate>(newDays, 7);
 });
 </script>
 <style>
