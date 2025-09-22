@@ -7,7 +7,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onUpdated, watch, computed, onUnmounted } from 'vue';
+import { onUpdated, watch, computed, onUnmounted, onMounted } from 'vue';
 // 组件
 import MonthCalendar from './components/month/month.vue';
 import DayCalendar from './components/day/day.vue';
@@ -21,14 +21,14 @@ import { useMonth } from '@/hooks/useMonth';
 import { ECalendarType, TData } from './types';
 import { getDaysScope } from '@/date';
 
-const props = defineProps<{ data: { [key: string]: TData[] } }>();
+const props = defineProps<{ data: { [key: string]: TData[] }; calendarView?: ECalendarType }>();
 const emitter = defineEmits<{
   (event: 'getDateScope', scope: [string, string]): void;
   (event: 'change', data: TData): void;
   (event: 'delete', id: number): void;
 }>();
 
-const { store, getData, currentDay, onTaskChange, onTaskDelete, onKeydown, onKeyup } = useStore();
+const { store, getData, currentDay, onTaskChange, onTaskDelete, onKeydown, onKeyup, setCalendarView } = useStore();
 const { replenishCurrentDays } = useMonth();
 
 onTaskChange.value = (data: TData) => {
@@ -41,6 +41,12 @@ onTaskDelete.value = () => {
 
 onUpdated(() => {
   getData(props.data);
+});
+
+onMounted(() => {
+  if (props.calendarView) {
+    setCalendarView(props.calendarView);
+  }
 });
 
 const components = {

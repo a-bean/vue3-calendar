@@ -1,9 +1,13 @@
 <template>
-  <div style="height: 80vh; width: 90vw">
-    <h1>测试打包后的组件</h1>
-    <p>这个页面使用打包后的组件，验证样式和功能是否正常</p>
-
-    <Calendar v-slot="slotProps" :data="data" @get-date-scope="getDateScope" @change="onChange" @delete="onDelete">
+  <div style="height: 90vh; width: 100%">
+    <Calendar
+      v-slot="slotProps"
+      :data="data"
+      :calendar-view="ECalendarType.YEAR"
+      @get-date-scope="getDateScope"
+      @change="onChange"
+      @delete="onDelete"
+    >
       <!-- 用的人自己写吧。这个详情组件定制化程度很高，而且这边还需要用到日期选择器，时间选择器，每个项目都可能在其他地方已经引入了，为了样式统一等原因全部交由使用者自己来写-->
       <div class="h400px w400px bg-[#FFF] shadow-[0px_4px_10px_0px_rgba(0,0,0,0.10)] p4 rd-2">
         <div @click="slotProps.data.start = '2024-03-07 04:00'">{{ slotProps.data }}</div>
@@ -14,9 +18,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 // import { Calendar } from '../dist/calendar-vue.es';
-import '../dist/style.css';
+// import '../dist/style.css';
 import Calendar from '../src/index.vue';
-import { TData } from '../src/types';
+import { TData, ECalendarType } from '../src/types';
 import dayjs from 'dayjs';
 
 const tempDataKeys = dayjs().format('YYYY-MM-DD');

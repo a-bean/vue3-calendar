@@ -22,6 +22,10 @@ const onTaskDelete = ref<() => void>();
 const currentDay = ref<string | Date>(new Date());
 
 export const useStore = () => {
+  const setCalendarView = (view: ECalendarType) => {
+    store.value.calendarView = view;
+  };
+
   /** 获取网络请求的数据 */
   const getData = (value: { [key: string]: TData[] }) => {
     store.value.data = value;
@@ -96,6 +100,7 @@ export const useStore = () => {
   return {
     store,
     currentDay,
+    setCalendarView,
     getData,
     onRecover,
     onChange,

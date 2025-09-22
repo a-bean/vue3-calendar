@@ -51,7 +51,7 @@ export default defineConfig(({ command }) => {
     server: {
       host: true,
       open: true,
-      port: 3000,
+      // port: 3000,
     },
   };
 });
