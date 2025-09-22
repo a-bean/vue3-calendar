@@ -14,7 +14,7 @@
       <div v-if="props.data.isFirstDayOfMonth">
         {{ getDate({ date: props.data.date, format: 'MM月DD日' }) }}
       </div>
-      <div v-else>
+      <div v-else @dblclick="onDblclick(props.data.date)">
         <span v-if="props.data.isToday" class="is-today">
           {{ cutDay(props.data.date) }}
         </span>
@@ -47,7 +47,7 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch, nextTick } from 'vue';
-import { TData, TDate } from '@/types';
+import { TData, TDate, ECalendarType } from '@/types';
 import MonthTask from './month-task.vue';
 import { useMonth } from '@/hooks/useMonth';
 import { getDate, getTimeInterval, getWeekIndex, isBefore } from '@/date';
@@ -55,7 +55,7 @@ import Popover from '@/components/popover/popover.vue';
 import { useStore } from '@/hooks/useStore';
 
 const { onDrop, onDragover, taskBoxWidth } = useMonth();
-const { addTask } = useStore();
+const { addTask, setCalendarView, currentDay } = useStore();
 
 const props = defineProps<{
   data: TDate & { dataList?: TData[] };
@@ -98,6 +98,11 @@ const onTaskBoxResize = () => {
   if (!taskHeight || !taskBoxHeight || taskBoxHeight < 2 * taskHeight) return;
   // 这边的加1是为了抵消task的margin-bottom的影响，导致还有*项...的显示不完全
   showTaskCount.value = Math.floor(taskBoxHeight / (taskHeight + 1));
+};
+
+const onDblclick = (date: string) => {
+  currentDay.value = date;
+  setCalendarView(ECalendarType.DAY);
 };
 
 let timer: NodeJS.Timeout;

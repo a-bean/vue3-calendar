@@ -1,5 +1,5 @@
 <template>
-  <div class="year-month">
+  <div class="year-month" @dblclick="onDblclick(props.data[0].date)">
     <div class="year-month-title pl-4">{{ getChineseMonth(props.data[0].date) }}</div>
     <div class="year-month-body">
       <div class="flex mb-4 mt-4">
@@ -30,12 +30,15 @@
 import { computed } from 'vue';
 import { getDate, getLunarDay, getLunarMonth, getChineseMonth, weeks, getWeekIndex } from '@/date';
 import { convertTo2DArray } from '@/utils';
-import { TDate } from '@/types';
+import { ECalendarType, TDate } from '@/types';
 import { cloneDeep } from 'lodash';
+import { useStore } from '@/hooks/useStore';
 
 const props = defineProps<{
   data: TDate[];
 }>();
+
+const { setCalendarView, currentDay } = useStore();
 
 const replenishCurrentDays = computed((): TDate[][] => {
   if (!props.data.length) return [];
@@ -81,6 +84,11 @@ const replenishCurrentDays = computed((): TDate[][] => {
 
   return convertTo2DArray<TDate>(newDays, 7);
 });
+
+const onDblclick = (date: string) => {
+  currentDay.value = date;
+  setCalendarView(ECalendarType.MONTH);
+};
 </script>
 <style>
 .year-month {
