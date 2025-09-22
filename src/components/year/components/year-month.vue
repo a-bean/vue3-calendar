@@ -1,9 +1,9 @@
 <template>
   <div class="year-month">
-    <div class="year-month-title">{{ getChineseMonth(props.data[0].date) }}</div>
+    <div class="year-month-title pl-4">{{ getChineseMonth(props.data[0].date) }}</div>
     <div class="year-month-body">
-      <div class="year-month-header">
-        <div v-for="item of weeks" :key="item" class="year-month-header-item">
+      <div class="flex mb-4 mt-4">
+        <div v-for="item of weeks" :key="item" class="flex-1 text-center font-size-3.6">
           {{ item.slice(1, 2) }}
         </div>
       </div>
@@ -93,13 +93,6 @@ const replenishCurrentDays = computed((): TDate[][] => {
 
 .year-month-body {
   @apply flex-1 font-size-3.5 flex flex-col;
-}
-
-.year-month-header {
-  @apply w100% flex justify-between mb-4 mt-4;
-}
-.year-month-header-item {
-  @apply font-size-3.6;
 }
 
 .year-month-content {
