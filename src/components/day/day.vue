@@ -1,25 +1,27 @@
 <template>
-  <div class="day">
-    <!-- header -->
-    <div class="day-header">
-      <div class="day-header-left">全天</div>
-      <div class="day-header-right">大雪</div>
+  <div class="w100% h100% flex">
+    <div class="day flex-1">
+      <div class="day-header">
+        <div class="day-header-left">全天</div>
+        <div class="day-header-right">大雪</div>
+      </div>
+      <div class="day-body">
+        <!-- 刻度 -->
+        <TimeScale class="w15" />
+        <!-- 任务区域 -->
+        <dayBody v-slot="slotProps" :data="formatData">
+          <slot :data="slotProps.data"></slot>
+        </dayBody>
+      </div>
     </div>
-    <!-- body -->
-    <div class="day-body">
-      <!-- 刻度 -->
-      <TimeScale class="w15" />
-      <!-- 任务区域 -->
-      <dayBody v-slot="slotProps" :data="formatData">
-        <slot :data="slotProps.data"></slot>
-      </dayBody>
-    </div>
+    <MinCalendar class="w280px h300px px4" />
   </div>
 </template>
 <script setup lang="ts">
 import { useDay } from '@/hooks/useDay';
 import TimeScale from '@/components/time-scale/time-scale.vue';
 import dayBody from './components/day-body.vue';
+import MinCalendar from '../min-calendar/index.vue';
 
 const { formatData } = useDay();
 </script>

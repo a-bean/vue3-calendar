@@ -3,7 +3,7 @@
     <Calendar
       v-slot="slotProps"
       :data="data"
-      :calendar-view="ECalendarType.YEAR"
+      :calendar-view="ECalendarType.DAY"
       @get-date-scope="getDateScope"
       @change="onChange"
       @delete="onDelete"

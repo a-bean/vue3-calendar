@@ -1,6 +1,6 @@
 <template>
-  <div class="year-month" @dblclick="onDblclick(props.data[0].date)">
-    <div class="year-month-title pl-4">{{ getChineseMonth(props.data[0].date) }}</div>
+  <div class="year-month" @dblclick="onDblclick(props.data[0]?.date)">
+    <div class="year-month-title pl-4">{{ getChineseMonth(props.data[0]?.date) }}</div>
     <div class="year-month-body">
       <div class="flex mb-4 mt-4">
         <div v-for="item of weeks" :key="item" class="flex-1 text-center font-size-3.6">
@@ -8,19 +8,17 @@
         </div>
       </div>
       <div class="year-month-content">
-        <div v-for="(row, rowIndex) of replenishCurrentDays" :key="rowIndex" class="year-month-content-row">
-          <div
-            v-for="item of row"
-            :key="item.date"
-            class="flex-1 text-center"
-            :class="{
-              'color-#ccc': !item.isCurrentMonth,
-              'b-b-solid b-b-1 b-red': item.isFirstDayOfLunarMonth,
-              'bg-red color-white b-rd-50%': item.isToday,
-            }"
-          >
-            {{ item.day?.startsWith('0') ? item.day.slice(-1) : item.day }}
-          </div>
+        <div
+          v-for="item of flatDays"
+          :key="item.date"
+          class="year-month-day"
+          :class="{
+            'color-#ccc': !item.isCurrentMonth,
+            'b-b-solid b-b-1 b-red': item.isFirstDayOfLunarMonth,
+            'bg-red color-white b-rd-50%': item.isToday,
+          }"
+        >
+          {{ item.day?.startsWith('0') ? item.day.slice(-1) : item.day }}
         </div>
       </div>
     </div>
@@ -85,9 +83,16 @@ const replenishCurrentDays = computed((): TDate[][] => {
   return convertTo2DArray<TDate>(newDays, 7);
 });
 
-const onDblclick = (date: string) => {
-  currentDay.value = date;
-  setCalendarView(ECalendarType.MONTH);
+// 将二维数组展平为一维数组，用于 Grid 布局
+const flatDays = computed((): TDate[] => {
+  return replenishCurrentDays.value.flat();
+});
+
+const onDblclick = (date: string | undefined) => {
+  if (date) {
+    currentDay.value = date;
+    setCalendarView(ECalendarType.MONTH);
+  }
 };
 </script>
 <style>
@@ -104,10 +109,10 @@ const onDblclick = (date: string) => {
 }
 
 .year-month-content {
-  @apply flex-1 flex flex-col justify-between;
+  @apply flex-1 grid grid-cols-7 gap-1 auto-rows-fr;
 }
 
-.year-month-content-row {
-  @apply flex justify-between flex-content-between;
+.year-month-day {
+  @apply text-center  flex items-center justify-center aspect-square;
 }
 </style>
