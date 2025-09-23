@@ -13,9 +13,16 @@
       </div>
     </div>
     <div class="w100% flex font-size-2.5 b-t-solid b-b-solid b-#ccc b-t-1 b-b-3">
-      <div class="w15 h4 line-height-4 text-right color-#ccc pl2 pr2 box-border">全天</div>
+      <div class="w15 text-right color-#ccc pl2 pr2 box-border">全天</div>
       <div v-for="(item, index) of store.currentDate" :key="item.date" class="flex-1 flex">
-        <div class="h4 flex-1 box-border" :class="{ 'b-r-solid b-r-1 b-r-#ccc': index !== 6 }"></div>
+        <div class="flex-1 box-border flex flex-col gap-1px" :class="{ 'b-r-solid b-r-1 b-r-#ccc color-white': index !== 6 }">
+          <template v-if="index === 1">
+            <div class="bg-green b-rd h5 line-height-5 pl-1.5">大雪</div>
+            <div class="bg-green b-rd h5 line-height-5 pl-1.5">大雪</div>
+            <div class="bg-green b-rd h5 line-height-5 pl-1.5">大雪</div>
+            <div class="bg-green b-rd h5 line-height-5 pl-1.5">大雪</div>
+          </template>
+        </div>
       </div>
     </div>
   </div>
