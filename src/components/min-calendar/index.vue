@@ -15,7 +15,7 @@
             'color-#ccc': !item.isCurrentMonth,
             'b-b-solid b-b-1 b-red': item.isFirstDayOfLunarMonth,
             'bg-red color-white b-rd-50%': item.isToday,
-            'bg-gray color-black b-rd-50%': item.date === currentDay,
+            'bg-gray b-rd-50% ': item.date === currentDay && !item.isToday,
           }"
           @click="onClick(item)"
         >
