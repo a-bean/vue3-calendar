@@ -301,6 +301,16 @@ export const formatWeekTask = (events: { [key: string]: TData[] }): { [key: stri
       while (interval > 0) {
         const oldEnd = oldTask.end;
         const nextDayKey = getDate({ date: oldTask.start, add, type: 'day', format: 'YYYY-MM-DD' });
+
+        // 检查结束时间是否等于下一天的 00:00，如果是则跳过创建额外任务
+        const endTime = getDate({ date: oldEnd, format: 'HH:mm' });
+        const endDate = getDate({ date: oldEnd, format: 'YYYY-MM-DD' });
+        if (endTime === '00:00' && endDate === nextDayKey) {
+          interval--;
+          add++;
+          continue;
+        }
+
         // 如果不存在下一天的数据，就创建一个
         if (!dataCopy[nextDayKey]) {
           dataCopy[nextDayKey] = [];

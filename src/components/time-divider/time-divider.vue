@@ -17,7 +17,7 @@ const props = defineProps<{
 }>();
 
 const emitter = defineEmits<{
-  (event: 'ondblclick', index: number): void;
+  (event: 'ondblclick', hour: number): void;
 }>();
 </script>
 

@@ -23,10 +23,6 @@ export const useDay = () => {
   /** 是全天的task */
   const isAllDay = computed(() => {
     return store.value.data?.[store.value.currentDate[0].date]?.filter((item) => {
-      // 判断 结束时间 - 开始时间 是否大于等于 24 小时
-      if (item.title === '奥尼尔') {
-        console.log(item.end, item.start, getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }));
-      }
       return getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }) >= 24;
     });
   });

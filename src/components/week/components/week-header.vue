@@ -16,12 +16,14 @@
       <div class="w15 text-right color-#ccc pl2 pr2 box-border">全天</div>
       <div v-for="(item, index) of store.currentDate" :key="item.date" class="flex-1 flex">
         <div class="flex-1 box-border flex flex-col gap-1px" :class="{ 'b-r-solid b-r-1 b-r-#ccc color-white': index !== 6 }">
-          <template v-if="index === 1">
-            <div class="bg-green b-rd h5 line-height-5 pl-1.5">大雪</div>
-            <div class="bg-green b-rd h5 line-height-5 pl-1.5">大雪</div>
-            <div class="bg-green b-rd h5 line-height-5 pl-1.5">大雪</div>
-            <div class="bg-green b-rd h5 line-height-5 pl-1.5">大雪</div>
-          </template>
+          <div
+            v-for="item1 of isAllDay[item.date]"
+            :key="item1.id"
+            class="b-rd h5 line-height-5 pl-1.5"
+            :style="{ backgroundColor: item1.color }"
+          >
+            {{ item1.title }}
+          </div>
         </div>
       </div>
     </div>
@@ -31,8 +33,10 @@
 import { getDate, getLunarMonth } from '@/date';
 import { useStore } from '@/hooks/useStore';
 import { ECalendarType } from '@/types';
+import { useWeek } from '@/hooks/useWeek';
 
 const { store, setCalendarView, currentDay } = useStore();
+const { isAllDay } = useWeek();
 
 const onDblclick = (date: string) => {
   currentDay.value = date;

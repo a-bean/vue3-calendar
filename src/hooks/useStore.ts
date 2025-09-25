@@ -83,15 +83,15 @@ export const useStore = () => {
     }
   };
 
-  const addTask = (index: number, key: string) => {
-    if (!store.value.data[key]) {
-      store.value.data[key] = [];
+  const addTask = (hour: number, day: string) => {
+    if (!store.value.data[day]) {
+      store.value.data[day] = [];
     }
 
-    store.value.data[key].push({
+    store.value.data[day].push({
       id: Date.now(),
-      start: `${key} ${index}:00:00`,
-      end: `${key} ${index + 1}:00:00`,
+      start: `${day} ${hour}:00:00`,
+      end: `${day} ${hour + 1}:00:00`,
       title: '新建任务',
     });
   };

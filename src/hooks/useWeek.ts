@@ -4,6 +4,7 @@ import { getTimeInterval, getDate } from '@/date';
 import { useStore } from '@/hooks/useStore';
 import { formatWeekTask } from '@/utils';
 import { TData } from '@/types';
+import { cloneDeep } from 'lodash';
 
 const MIN_HEIGHT = 15;
 const BEST_TIME_SCALE = 15;
@@ -32,7 +33,28 @@ export const useWeek = () => {
   };
 
   const formatDataWeekData = computed(() => {
-    return formatWeekTask(store.value.data);
+    const tempData = cloneDeep(store.value.data);
+    for (const dataKey in tempData) {
+      if (!Object.prototype.hasOwnProperty.call(tempData, dataKey)) continue;
+      tempData[dataKey] = tempData[dataKey].filter((item) => {
+        const startHour = getDate({ date: item.start, format: 'HH:mm' });
+        return startHour !== '00:00' && getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }) !== 24;
+      });
+    }
+    return formatWeekTask(tempData);
+  });
+
+  const isAllDay = computed(() => {
+    const tempData = cloneDeep(store.value.data);
+    for (const dataKey in tempData) {
+      if (!Object.prototype.hasOwnProperty.call(tempData, dataKey)) continue;
+      tempData[dataKey] = tempData[dataKey].filter((item) => {
+        const startHour = getDate({ date: item.start, format: 'HH:mm' });
+        return startHour === '00:00' && getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }) >= 24;
+      });
+    }
+    console.log('🚀 ~ isAllDay ~ tempData:', tempData, formatWeekTask(tempData));
+    return formatWeekTask(tempData);
   });
 
   const changeMoveType = (type: ETaskMoveType) => {
@@ -153,5 +175,6 @@ export const useWeek = () => {
     mouseenter,
     changeMoveType,
     onColumnsMouseenter,
+    isAllDay,
   };
 };
