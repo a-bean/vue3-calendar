@@ -189,9 +189,10 @@ export const useWeek = () => {
   };
 
   const onDragStart = (e: DragEvent, data?: TData) => {
+    console.log('🚀 ~ onDragStart ~ data:', formatDataWeekData.value);
     if (!taskBoxWidth.value || !data) return;
 
-    // dragData.targetFragmentStart = isBefore(isAllDay.value[0].date, data.start) ? data.start : isAllDay.value[0].date;
+    dragData.targetFragmentStart = isBefore(store.value.currentDate[0].date, data.start) ? data.start : store.value.currentDate[0].date;
     dragData.targetEnd = data.end;
     dragData.targetId = data.id as number;
     dragData.offset = Math.floor(e.offsetX / taskBoxWidth.value);
@@ -245,13 +246,13 @@ export const useWeek = () => {
     }
 
     // add new data
-    // const newKey = isBefore(newTaskStart, completeData.value[0].date)
-    //   ? completeData.value[0].date
-    //   : getDate({ date: newTaskStart, format: 'YYYY-MM-DD' });
+    const newKey = isBefore(newTaskStart, store.value.currentDate[0].date)
+      ? store.value.currentDate[0].date
+      : getDate({ date: newTaskStart, format: 'YYYY-MM-DD' });
 
-    // if (!store.value.data[newKey]) {
-    //   store.value.data[newKey] = [];
-    // }
+    if (!store.value.data[newKey]) {
+      store.value.data[newKey] = [];
+    }
 
     const newTask = {
       ...dragData.targetTask!,
@@ -260,13 +261,13 @@ export const useWeek = () => {
       end: getDate({ date: dragData.targetTask!.end, add: taskOffset, type: 'day', format: 'YYYY-MM-DD HH:mm' }),
     };
 
-    // if (getTimeInterval({ bigDate: newTask.end, smallDate: newTask.start, unit: 'day' }) > 0) {
-    //   // task跨天就加在前面
-    //   store.value.data[newKey].unshift(newTask);
-    // } else {
-    //   // task不跨天就加在后面
-    //   store.value.data[newKey].push(newTask);
-    // }
+    if (getTimeInterval({ bigDate: newTask.end, smallDate: newTask.start, unit: 'day' }) > 0) {
+      // task跨天就加在前面
+      store.value.data[newKey].unshift(newTask);
+    } else {
+      // task不跨天就加在后面
+      store.value.data[newKey].push(newTask);
+    }
     onTaskChange.value?.(newTask);
   };
 
@@ -283,5 +284,6 @@ export const useWeek = () => {
     onDragStart,
     onDragover,
     onDrop,
+    taskBoxWidth,
   };
 };

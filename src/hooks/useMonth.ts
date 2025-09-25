@@ -181,7 +181,6 @@ export const useMonth = () => {
 
     const newTask = {
       ...dragData.targetTask!,
-      // id: dragData.targetId,
       start: newTaskStart,
       end: getDate({ date: dragData.targetTask!.end, add: taskOffset, type: 'day', format: 'YYYY-MM-DD HH:mm' }),
     };

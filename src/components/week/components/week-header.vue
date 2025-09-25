@@ -17,30 +17,65 @@
       <div
         v-for="(item, index) of store.currentDate"
         :key="item.date"
+        ref="boxRef"
         class="flex-1 flex"
         :data-date="item.date"
         @dragover="onDragover"
         @drop="onDrop"
       >
         <div class="flex-1 box-border flex flex-col gap-1px" :class="{ 'b-r-solid b-r-1 b-r-#ccc color-white': index !== 6 }">
-          <WeekAllDayTask v-for="allDayItem of isAllDay[item.date]" :key="allDayItem.id" :data="allDayItem" />
+          <WeekAllDayTask
+            v-for="allDayItem of isAllDay[item.date]"
+            :key="allDayItem.id"
+            :data="allDayItem"
+            :style="{ width: getMonthTaskWidth(allDayItem, item.date) }"
+          />
         </div>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { getDate, getLunarMonth } from '@/date';
+import { getDate, getLunarMonth, getTimeInterval, getWeekIndex, isBefore } from '@/date';
 import { useStore } from '@/hooks/useStore';
-import { ECalendarType } from '@/types';
+import { ECalendarType, TData } from '@/types';
 import { useWeek } from '@/hooks/useWeek';
 import WeekAllDayTask from './week-all-day-task.vue';
+import { ref, nextTick, onMounted, onUnmounted } from 'vue';
 
 const { store, setCalendarView, currentDay } = useStore();
-const { isAllDay, onDragover, onDrop } = useWeek();
+const { isAllDay, onDragover, onDrop, taskBoxWidth } = useWeek();
 
 const onDblclick = (date: string) => {
   currentDay.value = date;
   setCalendarView(ECalendarType.DAY);
 };
+
+const getMonthTaskWidth = (data: TData, date: string) => {
+  const currentFragmentStart = isBefore(data.start, date) ? date : data.start;
+  const interval = Math.min(
+    getTimeInterval({ bigDate: data.end, smallDate: currentFragmentStart, unit: 'day' }),
+    6 - getWeekIndex(currentFragmentStart)
+  );
+  // TODO: 还不知道为什么要减去5 * interval
+  return `calc(${interval + 1}00% - ${5 * interval}px)`;
+};
+
+const boxRef = ref<HTMLElement[]>([]);
+const onTaskBoxResize = () => {
+  taskBoxWidth.value = boxRef.value![0]!.clientWidth; // 记录月视图每个日期的宽度
+};
+
+nextTick(() => {
+  onTaskBoxResize();
+});
+
+onMounted(() => {
+  window.addEventListener('resize', onTaskBoxResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', onTaskBoxResize);
+});
 </script>
+, getTimeInterval, getWeekIndex, isBefore, TData

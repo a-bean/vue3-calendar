@@ -25,6 +25,7 @@ import dayjs from 'dayjs';
 
 const tempDataKeys = dayjs().format('YYYY-MM-DD');
 const lastTempDataKeys = dayjs(tempDataKeys).add(1, 'day').format('YYYY-MM-DD');
+const lastLastTempDataKeys = dayjs(lastTempDataKeys).add(1, 'day').format('YYYY-MM-DD');
 
 const data = ref<{ [key: string]: TData[] }>({});
 const getDateScope = (scope: [string, string]) => {
@@ -33,6 +34,7 @@ const getDateScope = (scope: [string, string]) => {
     [tempDataKeys]: [
       // { id: 14, title: '格林', start: `${tempDataKeys} 04:00`, end: `${tempDataKeys} 05:00`, color: '#10B981' },
       { id: 13, title: '库里', start: `${tempDataKeys} 00:01`, end: `${lastTempDataKeys} 00:00`, color: '#8B5CF6' },
+
       // { id: 15, title: '汤普森', start: `${tempDataKeys} 06:00`, end: `${tempDataKeys} 07:00`, color: '#F59E0B' },
       // { id: 16, title: '科比', start: `${tempDataKeys} 08:00`, end: `${tempDataKeys} 09:00`, color: '#EF4444' },
       // // 添加更多重叠任务来测试排布
@@ -40,7 +42,8 @@ const getDateScope = (scope: [string, string]) => {
       // { id: 18, title: '杜兰特', start: `${tempDataKeys} 05:00`, end: `${tempDataKeys} 06:00`, color: '#EC4899' },
       // { id: 19, title: '哈登', start: `${tempDataKeys} 05:30`, end: `${tempDataKeys} 06:30`, color: '#06B6D4' },
       // 来一个一整天的
-      { id: 20, title: '麦迪', start: `${tempDataKeys} 00:00`, end: `${lastTempDataKeys} 00:00`, color: 'red' },
+      { id: 20, title: '麦迪', start: `${tempDataKeys} 00:00`, end: `${lastLastTempDataKeys} 00:00`, color: 'red' },
+      // { id: 21, title: '麦迪', start: `${lastTempDataKeys} 00:00`, end: `${lastLastTempDataKeys} 00:00`, color: 'red' },
       // { id: 23, title: '奥尼尔', start: `${tempDataKeys} 00:00`, end: `${tempDataKeys} 00:41`, color: 'blue' },
     ],
   };
