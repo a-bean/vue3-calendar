@@ -1,13 +1,17 @@
 <template>
   <div
     ref="boxRef"
-    class="month-body-item"
+    class="h100% flex flex-col position-relative"
     :data-date="props.data.date"
     @dragover="onDragover"
     @drop="onDrop"
     @dblclick="addTask(9, props.data.date)"
   >
-    <div ref="titleRef" class="month-body-item-title" :class="{ 'color-#c9cdd4': !props.data.isCurrentMonth }">
+    <div
+      ref="titleRef"
+      class="h6 flex flex-justify-between flex-items-center font-size-3.5 p2 pb0"
+      :class="{ 'color-#c9cdd4': !props.data.isCurrentMonth }"
+    >
       <div :class="{ 'border-b border-b-solid border-red ': props.data.isFirstDayOfLunarMonth }">
         {{ props.data.isFirstDayOfLunarMonth ? props.data.lunarMonth + props.data.lunarDay : props.data.lunarDay }}
       </div>
@@ -22,7 +26,7 @@
         日
       </div>
     </div>
-    <div class="month-body-item-list">
+    <div class="flex-1 mt1">
       <template v-for="item of props.data.dataList?.slice(0, 1)" :key="item.id">
         <Popover>
           <template #trigger>
@@ -41,7 +45,7 @@
         </Popover>
       </template>
 
-      <div v-if="surplusTaskCount > 0" class="month-body-item-list-surplus">还有{{ surplusTaskCount }}项...</div>
+      <div v-if="surplusTaskCount > 0" class="font-size-2.8 pl-2 pr-2">还有{{ surplusTaskCount }}项...</div>
     </div>
   </div>
 </template>
@@ -128,18 +132,3 @@ onUnmounted(() => {
   clearTimeout(timer);
 });
 </script>
-
-<style>
-.month-body-item {
-  @apply h100% flex flex-col position-relative;
-}
-.month-body-item-title {
-  @apply h6 flex flex-justify-between flex-items-center font-size-3.5 p2 pb0;
-}
-.month-body-item-list {
-  @apply flex-1 mt1;
-}
-.month-body-item-list-surplus {
-  @apply font-size-2.8 pl-2 pr-2;
-}
-</style>

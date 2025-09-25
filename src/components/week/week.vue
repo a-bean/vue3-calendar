@@ -1,5 +1,5 @@
 <template>
-  <div class="week">
+  <div class="w100% h100% flex flex-col select-none">
     <WeekHeader />
     <div ref="bodyRef" class="flex-1 flex overflow-scroll pt-1.6">
       <TimeScale class="w15" />
@@ -31,8 +31,3 @@ onUnmounted(() => {
   window.removeEventListener('resize', getBodyHeight);
 });
 </script>
-<style>
-.week {
-  @apply w100% h100% flex flex-col select-none;
-}
-</style>

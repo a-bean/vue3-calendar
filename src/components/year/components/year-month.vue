@@ -97,7 +97,7 @@ const onDblclick = (date: string | undefined) => {
 </script>
 <style>
 .year-month {
-  @apply h100% w100% p0.5 flex flex-col min-h-120px;
+  @apply h100% w100% p1 flex flex-col min-h-120px;
 }
 
 .year-month-title {
@@ -110,7 +110,7 @@ const onDblclick = (date: string | undefined) => {
 }
 
 .year-month-content {
-  @apply flex-1 grid grid-cols-7 gap-0.125 auto-rows-fr;
+  @apply flex-1 grid grid-cols-7 gap-0.5 auto-rows-fr;
   min-height: 0;
 }
 
@@ -120,23 +120,10 @@ const onDblclick = (date: string | undefined) => {
   font-size: 0.75rem;
 }
 
-/* 宽度较宽时的优化 */
-@media (min-width: 1200px) {
-  .year-month-content {
-    gap: 0.0625rem;
-  }
-}
-
-@media (min-width: 1600px) {
-  .year-month-content {
-    gap: 0.03125rem;
-  }
-}
-
 /* 高度较小时的优化 */
 @media (max-height: 600px) {
   .year-month {
-    padding: 0.125rem;
+    padding: 0.25rem;
     min-height: 100px;
   }
 
@@ -153,7 +140,7 @@ const onDblclick = (date: string | undefined) => {
 
 @media (max-height: 400px) {
   .year-month {
-    padding: 0.0625rem;
+    padding: 0.125rem;
     min-height: 80px;
   }
 

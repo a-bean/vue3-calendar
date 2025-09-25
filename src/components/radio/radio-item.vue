@@ -1,5 +1,5 @@
 <template>
-  <div class="radio-group-item" :class="{ active: active === attrs.value }">
+  <div class="w16 border-rd-0.8 text-center active:bg-#e6e6e6 hover:bg-gray" :class="{ active: active === attrs.value }">
     <slot> </slot>
   </div>
 </template>
@@ -12,11 +12,5 @@ const attrs = useAttrs();
 <style>
 .active {
   background-color: #f2f2f2;
-}
-</style>
-
-<style>
-.radio-group-item {
-  @apply w16 border-rd-0.8 text-center active:bg-#e6e6e6 hover:bg-gray;
 }
 </style>

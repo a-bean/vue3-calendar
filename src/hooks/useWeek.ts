@@ -1,8 +1,8 @@
-import { computed, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { ETaskMoveType, ONE_HOUR_HEIGHT } from '@/config';
-import { getTimeInterval, getDate } from '@/date';
+import { getTimeInterval, getDate, isBefore } from '@/date';
 import { useStore } from '@/hooks/useStore';
-import { formatWeekTask } from '@/utils';
+import { formatWeekTask, findTaskById, findDropTargetDate as findDropTargetDate1 } from '@/utils';
 import { TData } from '@/types';
 import { cloneDeep } from 'lodash';
 
@@ -16,6 +16,29 @@ let targetId: number;
 let moveType: ETaskMoveType;
 // 用于跨日期的task，记录鼠标点击位置于开头时间的偏移天数
 let interval: number;
+
+const taskBoxWidth = ref<number>(); // 记录任务盒子的宽度
+
+const dragData = reactive<{
+  /** 选中的task的id */
+  targetId: number;
+  /** 鼠标移动停止所有在日期 */
+  targetDate: string | null;
+  /** 选中的task */
+  targetTask: TData | null;
+  /** 选中的task片段的开始时间 */
+  targetFragmentStart: string;
+  /** 选中的task片段的结束时间 */
+  targetEnd: string;
+  offset: number;
+}>({
+  targetId: 0,
+  targetDate: '',
+  targetTask: null,
+  offset: 0,
+  targetFragmentStart: '',
+  targetEnd: '',
+});
 
 export const useWeek = () => {
   const findDropTargetDate = (id: number) => {
@@ -53,7 +76,6 @@ export const useWeek = () => {
         return startHour === '00:00' && getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }) >= 24;
       });
     }
-    console.log('🚀 ~ isAllDay ~ tempData:', tempData, formatWeekTask(tempData));
     return formatWeekTask(tempData);
   });
 
@@ -166,6 +188,88 @@ export const useWeek = () => {
     onTaskChange.value?.(target);
   };
 
+  const onDragStart = (e: DragEvent, data?: TData) => {
+    if (!taskBoxWidth.value || !data) return;
+
+    // dragData.targetFragmentStart = isBefore(isAllDay.value[0].date, data.start) ? data.start : isAllDay.value[0].date;
+    dragData.targetEnd = data.end;
+    dragData.targetId = data.id as number;
+    dragData.offset = Math.floor(e.offsetX / taskBoxWidth.value);
+    dragData.targetTask = findTaskById(dragData.targetId, store.value.data);
+  };
+
+  const onDragover = (e: DragEvent) => {
+    e.preventDefault();
+  };
+
+  const onDrop = (e: DragEvent) => {
+    dragData.targetDate = findDropTargetDate1(e.target as HTMLElement);
+
+    const dataId = (e.target as HTMLElement).getAttribute('data-id');
+    // 如果dataId有值，说明是task拖拽到另外一个task上了，这时候他会取另外
+    // 一个task的头部所在的box的日期作为targetDate，所以得加一个偏移量。
+    if (dataId) {
+      const offset = Math.floor(e.offsetX / taskBoxWidth.value!);
+      dragData.targetDate = getDate({ date: dragData.targetDate, add: offset });
+    }
+
+    if (!dragData.targetDate) return;
+
+    /** 当前task片段的start与task的start的偏移天数 */
+    const interval1 = getTimeInterval({
+      bigDate: dragData.targetFragmentStart,
+      smallDate: getDate({ date: dragData.targetTask!.start, format: 'YYYY-MM-DD' }),
+      unit: 'day',
+    });
+    /** 鼠标点击的位置离这条task的start的偏移天数 */
+    const clickOffset = interval1 + dragData.offset;
+
+    // 目标日期拼接上原来task的时分
+    const newTaskStartDate = `${getDate({
+      date: dragData.targetDate,
+      format: 'YYYY-MM-DD',
+    })} ${getDate({
+      date: dragData.targetTask?.start,
+      format: 'HH:mm',
+    })}`;
+
+    const newTaskStart = getDate({ date: newTaskStartDate, add: -clickOffset, type: 'day', format: 'YYYY-MM-DD HH:mm' });
+    const taskOffset = getTimeInterval({ bigDate: newTaskStart, smallDate: dragData.targetTask!.start, unit: 'day' });
+    if (taskOffset === 0) return;
+
+    // remove old data
+    for (const oldKey in store.value.data) {
+      if (store.value.data[oldKey] && store.value.data[oldKey].some((item) => item.id === dragData.targetId)) {
+        store.value.data[oldKey] = store.value.data[oldKey].filter((item) => item.id !== dragData.targetId);
+      }
+    }
+
+    // add new data
+    // const newKey = isBefore(newTaskStart, completeData.value[0].date)
+    //   ? completeData.value[0].date
+    //   : getDate({ date: newTaskStart, format: 'YYYY-MM-DD' });
+
+    // if (!store.value.data[newKey]) {
+    //   store.value.data[newKey] = [];
+    // }
+
+    const newTask = {
+      ...dragData.targetTask!,
+      // id: dragData.targetId,
+      start: newTaskStart,
+      end: getDate({ date: dragData.targetTask!.end, add: taskOffset, type: 'day', format: 'YYYY-MM-DD HH:mm' }),
+    };
+
+    // if (getTimeInterval({ bigDate: newTask.end, smallDate: newTask.start, unit: 'day' }) > 0) {
+    //   // task跨天就加在前面
+    //   store.value.data[newKey].unshift(newTask);
+    // } else {
+    //   // task不跨天就加在后面
+    //   store.value.data[newKey].push(newTask);
+    // }
+    onTaskChange.value?.(newTask);
+  };
+
   return {
     formatDataWeekData,
     taskBodyHeight,
@@ -176,5 +280,8 @@ export const useWeek = () => {
     changeMoveType,
     onColumnsMouseenter,
     isAllDay,
+    onDragStart,
+    onDragover,
+    onDrop,
   };
 };

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="task-default-opacity day-task"
+    class="task-default-opacity w100% bg-blue b-rd-2 font-size-3 color-white b-l-solid b-l-4 b-blue box-border position-absolute p1"
     :class="{ 'task-active-opacity': props.data?.id === store.selectedTaskId }"
     :style="{ top: `${top}%`, height: `${height}%`, backgroundColor: props.data.color, borderColor: props.data.color }"
     @click="selectedTask(props.data.id as number)"
@@ -8,13 +8,13 @@
   >
     <!--上拖拉的线-->
     <div
-      class="day-drag-line top--1.5"
+      class="h3 w100% position-absolute cursor-row-resize top--1.5"
       @mousedown.stop="(e) => mousedown(e, props.data.id as number, ETaskMoveType.MOVE_TOP)"
       @mouseenter="mouseenter(ETaskMoveType.MOVE_TOP)"
     ></div>
     <!--下拖拉的线-->
     <div
-      class="day-drag-line bottom--1.5"
+      class="h3 w100% position-absolute cursor-row-resize bottom--1.5"
       @mousedown.stop="(e) => mousedown(e, props.data.id as number, ETaskMoveType.MOVE_BOTTOM)"
       @mouseenter="mouseenter(ETaskMoveType.MOVE_BOTTOM)"
     ></div>
@@ -77,12 +77,3 @@ const height = computed(() => {
   );
 });
 </script>
-<style>
-.day-task {
-  @apply w100% bg-blue  b-rd-2 font-size-3 color-white b-l-solid b-l-4 b-blue box-border position-absolute p1;
-}
-
-.day-drag-line {
-  @apply h3 w100% position-absolute cursor-row-resize;
-}
-</style>

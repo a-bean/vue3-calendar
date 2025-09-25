@@ -39,8 +39,3 @@ import CurrentTimeline from '@/components/current-timeline/current-timeline.vue'
 const { store, addTask } = useStore();
 const { formatDataWeekData, onColumnsMouseenter } = useWeek();
 </script>
-<style>
-.week-body-items {
-  @apply flex-1 flex h100%;
-}
-</style>
