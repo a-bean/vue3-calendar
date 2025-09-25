@@ -11,8 +11,24 @@ const { store, onTaskChange } = useStore();
 
 export const useDay = () => {
   const formatData = computed(() => {
-    const data = store.value.data?.[store.value.currentDate[0].date] || [];
+    /** 不是全天的task */
+    const data =
+      store.value.data?.[store.value.currentDate[0].date]?.filter((item) => {
+        // 判断 结束时间 - 开始时间 是否小于 24 小时
+        return getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }) < 24;
+      }) || [];
     return groupSchedulesByOverlap(data);
+  });
+
+  /** 是全天的task */
+  const isAllDay = computed(() => {
+    return store.value.data?.[store.value.currentDate[0].date]?.filter((item) => {
+      // 判断 结束时间 - 开始时间 是否大于等于 24 小时
+      if (item.title === '奥尼尔') {
+        console.log(item.end, item.start, getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }));
+      }
+      return getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }) >= 24;
+    });
   });
 
   let isDragging = false;
@@ -59,18 +75,24 @@ export const useDay = () => {
     const { date } = store.value.currentDate[0];
     const target = store.value.data[date].find((item) => item.id === targetId)!;
     const oldDate = JSON.parse(JSON.stringify(target));
+
     const startRemainder = Number(getDate({ date: target.start, format: 'mm' })) % BEST_TIME_SCALE;
+
     const endRemainder = Number(getDate({ date: target.end, format: 'mm' })) % BEST_TIME_SCALE;
+
     const adjustTime = (remainder: number, prop: 'start' | 'end') => {
       const adjustValue = remainder < Math.round(BEST_TIME_SCALE / 2) ? -remainder : BEST_TIME_SCALE - remainder;
       target[prop] = getDate({ date: target[prop], add: adjustValue, type: 'minute', format: 'YYYY-MM-DD HH:mm' });
     };
+
     if (moveType === ETaskMoveType.MOVE_TOP || moveType === ETaskMoveType.MOVE_WHOLE) {
       adjustTime(startRemainder, 'start');
     }
+
     if (moveType === ETaskMoveType.MOVE_BOTTOM || moveType === ETaskMoveType.MOVE_WHOLE) {
       adjustTime(endRemainder, 'end');
     }
+
     // 如果时间有变化，触发回调
     if (oldDate.start !== target.start || oldDate.end !== target.end) {
       // 保持任务的位置信息，避免重新计算时位置变化
@@ -111,6 +133,7 @@ export const useDay = () => {
   return {
     taskBodyHeight,
     formatData,
+    isAllDay,
     mousedown,
     mousemove,
     mouseup,

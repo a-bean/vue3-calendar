@@ -18,7 +18,7 @@
       @mousedown.stop="(e) => mousedown(e, props.data.id as number, ETaskMoveType.MOVE_BOTTOM)"
       @mouseenter="mouseenter(ETaskMoveType.MOVE_BOTTOM)"
     ></div>
-    <div>{{ getDate({ date: props.data.start, format: 'HH:mm' }) }}</div>
+    <div>{{ getDate({ date: props.data.start, format: 'HH:mm' }) }}-{{ getDate({ date: props.data.end, format: 'HH:mm' }) }}</div>
     <div class="font-500">{{ props.data.title }}</div>
   </div>
 </template>

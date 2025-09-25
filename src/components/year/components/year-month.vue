@@ -97,22 +97,74 @@ const onDblclick = (date: string | undefined) => {
 </script>
 <style>
 .year-month {
-  @apply h100% w100% p2 flex flex-col;
+  @apply h100% w100% p0.5 flex flex-col min-h-120px;
 }
 
 .year-month-title {
-  @apply color-red h6;
+  @apply color-red h4 font-size-3 font-weight-600;
+  flex-shrink: 0;
 }
 
 .year-month-body {
-  @apply flex-1 font-size-3.5 flex flex-col;
+  @apply flex-1 font-size-2.5 flex flex-col min-h-0;
 }
 
 .year-month-content {
-  @apply flex-1 grid grid-cols-7 gap-1 auto-rows-fr;
+  @apply flex-1 grid grid-cols-7 gap-0.125 auto-rows-fr;
+  min-height: 0;
 }
 
 .year-month-day {
-  @apply text-center  flex items-center justify-center aspect-square;
+  @apply text-center flex items-center justify-center;
+  min-height: 1.2rem;
+  font-size: 0.75rem;
+}
+
+/* 宽度较宽时的优化 */
+@media (min-width: 1200px) {
+  .year-month-content {
+    gap: 0.0625rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .year-month-content {
+    gap: 0.03125rem;
+  }
+}
+
+/* 高度较小时的优化 */
+@media (max-height: 600px) {
+  .year-month {
+    padding: 0.125rem;
+    min-height: 100px;
+  }
+
+  .year-month-title {
+    height: 1rem;
+    font-size: 0.75rem;
+  }
+
+  .year-month-day {
+    font-size: 0.6rem;
+    min-height: 1rem;
+  }
+}
+
+@media (max-height: 400px) {
+  .year-month {
+    padding: 0.0625rem;
+    min-height: 80px;
+  }
+
+  .year-month-title {
+    height: 0.75rem;
+    font-size: 0.6rem;
+  }
+
+  .year-month-day {
+    font-size: 0.5rem;
+    min-height: 0.8rem;
+  }
 }
 </style>

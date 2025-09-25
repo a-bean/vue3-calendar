@@ -98,7 +98,7 @@ export const useMonth = () => {
           const offset = 7 - j;
 
           // 在当前行补充数据（占位，用id为string，后续显示隐藏掉），如果当前行不够，就补充下一行
-          for (let l = 1; l < offset && interval > 1; l++) {
+          for (let l = 1; l < offset && interval > l; l++) {
             list[i][l + j].dataList.splice(k, 0, { id: '-1', title: '占位', start: '', end: '' });
           }
 
