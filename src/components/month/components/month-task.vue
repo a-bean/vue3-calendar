@@ -12,7 +12,7 @@
       <div class="h1.4 w1.4 b-rd-50% mr1 bg-white"></div>
       {{ props.data?.title }}
     </div>
-    <div>{{ getDate({ date: props.data?.start, format: 'HH:mm' }) }}</div>
+    <div>{{ getDate({ date: props.data?.start, format: 'MM-DD' }) }}-{{ getDate({ date: props.data?.end, format: 'MM-DD' }) }}</div>
   </div>
 </template>
 <script setup lang="ts">

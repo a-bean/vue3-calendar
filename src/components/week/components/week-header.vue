@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- {{ isAllDay }} -->
     <div class="w100% flex font-size-3.5">
       <div class="w15 h7 line-height-7 text-right color-#ccc">{{ getLunarMonth(store.currentDate[0].date) }}</div>
       <div v-for="item of store.currentDate" :key="item.date" class="h6 line-height-6 flex-1 flex justify-between pr2 pl2">
@@ -15,22 +16,20 @@
     <div class="w100% flex font-size-2.5 b-t-solid b-b-solid b-#ccc b-t-1 b-b-3">
       <div class="w15 text-right color-#ccc pl2 pr2 box-border">全天</div>
       <div
-        v-for="(item, index) of store.currentDate"
+        v-for="item of store.currentDate"
         :key="item.date"
         ref="boxRef"
-        class="flex-1 flex"
+        class="flex-1 h-20px"
         :data-date="item.date"
         @dragover="onDragover"
         @drop="onDrop"
       >
-        <div class="flex-1 box-border flex flex-col gap-1px" :class="{ 'b-r-solid b-r-1 b-r-#ccc color-white': index !== 6 }">
-          <WeekAllDayTask
-            v-for="allDayItem of isAllDay[item.date]"
-            :key="allDayItem.id"
-            :data="allDayItem"
-            :style="{ width: getMonthTaskWidth(allDayItem, item.date) }"
-          />
-        </div>
+        <WeekAllDayTask
+          v-for="allDayItem of isAllDay[item.date]"
+          :key="allDayItem.id"
+          :data="allDayItem"
+          :style="{ width: getMonthTaskWidth(allDayItem, item.date) }"
+        />
       </div>
     </div>
   </div>
@@ -55,10 +54,10 @@ const getMonthTaskWidth = (data: TData, date: string) => {
   const currentFragmentStart = isBefore(data.start, date) ? date : data.start;
   const interval = Math.min(
     getTimeInterval({ bigDate: data.end, smallDate: currentFragmentStart, unit: 'day' }),
-    6 - getWeekIndex(currentFragmentStart)
+    7 - getWeekIndex(currentFragmentStart)
   );
   // TODO: 还不知道为什么要减去5 * interval
-  return `calc(${interval + 1}00% - ${5 * interval}px)`;
+  return `calc(${interval}00% - ${5 * interval}px)`;
 };
 
 const boxRef = ref<HTMLElement[]>([]);
@@ -78,4 +77,3 @@ onUnmounted(() => {
   window.removeEventListener('resize', onTaskBoxResize);
 });
 </script>
-, getTimeInterval, getWeekIndex, isBefore, TData

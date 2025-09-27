@@ -94,6 +94,7 @@ export const useMonth = () => {
         for (let k = 0; k < dataList.length; k++) {
           const { end } = dataList[k];
           const start = isBefore(dataList[k].start, list[0][0].date) ? list[0][0].date : dataList[k].start;
+
           const interval = getTimeInterval({ bigDate: end, smallDate: start, unit: 'day' }) + 1;
           const offset = 7 - j;
 
@@ -103,10 +104,10 @@ export const useMonth = () => {
           }
 
           // 补充下一行的数据
-          if (interval > offset && i < 5) {
+          if (interval > offset && i < list.length - 1 && list[i + 1] && list[i + 1][0]) {
             list[i + 1][0].dataList.unshift({
               ...dataList[k],
-              start: getDate({ date: start, add: offset }),
+              start: getDate({ date: start, add: offset, format: 'YYYY-MM-DD HH:mm' }),
             });
           }
         }

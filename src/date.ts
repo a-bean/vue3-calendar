@@ -166,8 +166,9 @@ export const getWeekthOfMonth = (date?: ConfigType): number => {
  * @function getTimeInterval
  * @description: 计算两个时间的间隔
  * @param {{ date1: ConfigType; date2: ConfigType; unit: ManipulateType }} data
- * @return {number}
+ * @return {number} 间隔天数
  */
+
 export const getTimeInterval = (data: { bigDate: ConfigType; smallDate: ConfigType; unit: ManipulateType }): number => {
   const { bigDate, smallDate, unit } = data;
   return dayjs(bigDate).diff(dayjs(smallDate), unit);
