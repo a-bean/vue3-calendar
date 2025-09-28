@@ -1,6 +1,6 @@
 <template>
   <div
-    class="b-rd h5 line-height-5 pl-1.5 color-white task-default-opacity"
+    class="b-rd h5 line-height-5 pl-1.5 box-border color-white task-default-opacity"
     :class="{ 'task-active-opacity': props.data?.id === store.selectedTaskId, invisible: typeof props.data?.id === 'string' }"
     :style="{ backgroundColor: props.data?.color }"
     draggable="true"

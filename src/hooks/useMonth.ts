@@ -115,7 +115,6 @@ export const useMonth = () => {
         }
       }
     }
-    console.log('🚀 ~ formatData ~ list:', list);
     return list;
   });
   const onDragStart = (e: DragEvent, data?: TData) => {

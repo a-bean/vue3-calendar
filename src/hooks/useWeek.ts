@@ -1,6 +1,6 @@
 import { computed, reactive, ref } from 'vue';
 import { ETaskMoveType, ONE_HOUR_HEIGHT } from '@/config';
-import { getTimeInterval, getDate, isBefore } from '@/date';
+import { getTimeInterval, getDate, isBefore, getWeekIndex } from '@/date';
 import { useStore } from '@/hooks/useStore';
 import { formatWeekTask, findTaskById, findDropTargetDate as findDropTargetDate1 } from '@/utils';
 import { TData } from '@/types';
@@ -76,7 +76,30 @@ export const useWeek = () => {
         return startHour === '00:00' && getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }) >= 24;
       });
     }
-    return formatWeekTask(tempData);
+
+    for (const dataKey in tempData) {
+      if (!Object.prototype.hasOwnProperty.call(tempData, dataKey)) continue;
+      const dataList = tempData[dataKey];
+      if (!dataList) continue;
+      for (let i = 0; i < dataList.length; i++) {
+        const { end } = dataList[i];
+        const start = isBefore(dataList[i].start, store.value.currentDate[0].date) ? store.value.currentDate[0].date : dataList[i].start;
+        // 例如：end是2025-09-27 00:00，start是2025-09-26 00:00，那么interval就不用加1，end是2025-09-27 01:00，start是2025-09-26 00:00，那么interval就得加1
+        const endHour = getDate({ date: end, format: 'HH:mm' });
+        const interval1 = getTimeInterval({ bigDate: end, smallDate: start, unit: 'day' }) + (endHour === '00:00' ? 0 : 1);
+        const offset = 7 - getWeekIndex(dataKey);
+        // 在当前行补充数据（占位，用id为string，后续显示隐藏掉）
+        for (let l = 1; l < offset && interval1 > l; l++) {
+          const newDataKey = getDate({ date: start, add: l, format: 'YYYY-MM-DD' });
+          if (!tempData[newDataKey]) {
+            tempData[newDataKey] = [];
+          }
+          tempData[newDataKey].unshift({ id: '-1', title: '占位', start: '', end: '' });
+        }
+      }
+    }
+    console.log('🚀 ~ isAllDay ~ tempData:', tempData);
+    return tempData;
   });
 
   const changeMoveType = (type: ETaskMoveType) => {
@@ -189,7 +212,6 @@ export const useWeek = () => {
   };
 
   const onDragStart = (e: DragEvent, data?: TData) => {
-    console.log('🚀 ~ onDragStart ~ data:', formatDataWeekData.value);
     if (!taskBoxWidth.value || !data) return;
 
     dragData.targetFragmentStart = isBefore(store.value.currentDate[0].date, data.start) ? data.start : store.value.currentDate[0].date;

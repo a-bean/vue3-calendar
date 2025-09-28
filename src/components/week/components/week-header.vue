@@ -19,7 +19,7 @@
         v-for="item of store.currentDate"
         :key="item.date"
         ref="boxRef"
-        class="flex-1 h-20px"
+        class="flex-1 min-h-20px"
         :data-date="item.date"
         @dragover="onDragover"
         @drop="onDrop"
@@ -52,12 +52,16 @@ const onDblclick = (date: string) => {
 
 const getMonthTaskWidth = (data: TData, date: string) => {
   const currentFragmentStart = isBefore(data.start, date) ? date : data.start;
+  const endHour = getDate({ date: data.end, format: 'HH:mm' });
+
   const interval = Math.min(
-    getTimeInterval({ bigDate: data.end, smallDate: currentFragmentStart, unit: 'day' }),
+    endHour.endsWith('00:00')
+      ? getTimeInterval({ bigDate: data.end, smallDate: currentFragmentStart, unit: 'day' })
+      : getTimeInterval({ bigDate: data.end, smallDate: currentFragmentStart, unit: 'day' }) + 1,
+
     7 - getWeekIndex(currentFragmentStart)
   );
-  // TODO: 还不知道为什么要减去5 * interval
-  return `calc(${interval}00% - ${5 * interval}px)`;
+  return `${interval}00%`;
 };
 
 const boxRef = ref<HTMLElement[]>([]);
