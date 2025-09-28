@@ -8,9 +8,7 @@
     @click="selectedTask(props.data!.id as number)"
     @dragstart="(e) => onDragStart(e, props.data)"
   >
-    <div class="flex flex-items-center">
-      {{ props.data?.title }}
-    </div>
+    {{ props.data?.title }}
   </div>
 </template>
 <script setup lang="ts">

@@ -98,7 +98,6 @@ export const useWeek = () => {
         }
       }
     }
-    console.log('🚀 ~ isAllDay ~ tempData:', tempData);
     return tempData;
   });
 
