@@ -69,7 +69,7 @@ const getMonthTaskWidth = (data: TData) => {
   const currentFragmentStart = isBefore(data.start, props.data.date) ? props.data.date : data.start;
   const endHour = getDate({ date: data.end, format: 'HH:mm' });
   const interval = Math.min(
-    endHour.endsWith('00:00')
+    endHour === '00:00'
       ? getTimeInterval({ bigDate: data.end, smallDate: currentFragmentStart, unit: 'day' })
       : getTimeInterval({ bigDate: data.end, smallDate: currentFragmentStart, unit: 'day' }) + 1,
 

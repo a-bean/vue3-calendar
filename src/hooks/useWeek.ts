@@ -61,7 +61,12 @@ export const useWeek = () => {
       if (!Object.prototype.hasOwnProperty.call(tempData, dataKey)) continue;
       tempData[dataKey] = tempData[dataKey].filter((item) => {
         const startHour = getDate({ date: item.start, format: 'HH:mm' });
-        return startHour !== '00:00' && getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }) !== 24;
+        const endHour = getDate({ date: item.end, format: 'HH:mm' });
+        return !(
+          startHour === '00:00' &&
+          endHour === '00:00' &&
+          getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }) >= 24
+        );
       });
     }
     return formatWeekTask(tempData);
@@ -73,7 +78,10 @@ export const useWeek = () => {
       if (!Object.prototype.hasOwnProperty.call(tempData, dataKey)) continue;
       tempData[dataKey] = tempData[dataKey].filter((item) => {
         const startHour = getDate({ date: item.start, format: 'HH:mm' });
-        return startHour === '00:00' && getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }) >= 24;
+        const endHour = getDate({ date: item.end, format: 'HH:mm' });
+        return (
+          startHour === '00:00' && endHour === '00:00' && getTimeInterval({ bigDate: item.end, smallDate: item.start, unit: 'hour' }) >= 24
+        );
       });
     }
 
