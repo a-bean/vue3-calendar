@@ -42,7 +42,7 @@ const getDateScope = (scope: [string, string]) => {
       // { id: 18, title: '杜兰特', start: `${tempDataKeys} 05:00`, end: `${tempDataKeys} 06:00`, color: '#EC4899' },
       // { id: 19, title: '哈登', start: `${tempDataKeys} 05:30`, end: `${tempDataKeys} 06:30`, color: '#06B6D4' },
       // 来一个一整天的
-      { id: 20, title: '麦迪', start: `${tempDataKeys} 00:00`, end: `${tempDataKeys2} 00:00`, color: 'red' },
+      { id: 20, title: '麦迪', start: `${tempDataKeys} 00:00`, end: `${tempDataKeys2} 01:00`, color: 'red' },
       // { id: 21, title: '麦迪', start: `${lastTempDataKeys} 00:00`, end: `${lastLastTempDataKeys} 00:00`, color: 'red' },
       // { id: 23, title: '奥尼尔', start: `${tempDataKeys} 00:00`, end: `${tempDataKeys} 00:41`, color: 'blue' },
     ],

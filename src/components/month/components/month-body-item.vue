@@ -67,12 +67,16 @@ const props = defineProps<{
 
 const getMonthTaskWidth = (data: TData) => {
   const currentFragmentStart = isBefore(data.start, props.data.date) ? props.data.date : data.start;
+  const endHour = getDate({ date: data.end, format: 'HH:mm' });
   const interval = Math.min(
-    getTimeInterval({ bigDate: data.end, smallDate: currentFragmentStart, unit: 'day' }),
-    6 - getWeekIndex(currentFragmentStart)
+    endHour.endsWith('00:00')
+      ? getTimeInterval({ bigDate: data.end, smallDate: currentFragmentStart, unit: 'day' })
+      : getTimeInterval({ bigDate: data.end, smallDate: currentFragmentStart, unit: 'day' }) + 1,
+
+    7 - getWeekIndex(currentFragmentStart)
   );
 
-  return `calc(${interval + 1}00% + ${interval}px)`;
+  return `calc(${interval}00% + ${interval}px)`;
 };
 
 const cutDay = (day: string) => (day.slice(-2).startsWith('0') ? day.slice(-1) : day.slice(-2));
