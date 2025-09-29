@@ -83,6 +83,21 @@ export const useStore = () => {
     }
   };
 
+  const addAllDayTask = (day: string) => {
+    if (!store.value.data[day]) {
+      store.value.data[day] = [];
+    }
+    const day1 = getDate({ date: day, format: 'YYYY-MM-DD', add: 1 });
+    store.value.data[day].push({
+      id: Date.now(),
+      start: `${day} 00:00:00`,
+      end: `${day1} 00:00:00`,
+      title: '新建任务',
+    });
+    /** 新增任务后，触发回调 */
+    onTaskChange.value?.(store.value.data[day][store.value.data[day].length - 1]);
+  };
+
   const addTask = (hour: number, day: string) => {
     if (!store.value.data[day]) {
       store.value.data[day] = [];
@@ -94,6 +109,8 @@ export const useStore = () => {
       end: `${day} ${hour + 1}:00:00`,
       title: '新建任务',
     });
+    /** 新增任务后，触发回调 */
+    onTaskChange.value?.(store.value.data[day][store.value.data[day].length - 1]);
   };
 
   return {
@@ -109,5 +126,6 @@ export const useStore = () => {
     onKeydown,
     onKeyup,
     addTask,
+    addAllDayTask,
   };
 };

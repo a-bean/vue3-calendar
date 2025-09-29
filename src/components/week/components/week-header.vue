@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- {{ isAllDay }} -->
     <div class="w100% flex font-size-3.5">
       <div class="w15 h7 line-height-7 text-right color-#ccc">{{ getLunarMonth(store.currentDate[0].date) }}</div>
       <div v-for="item of store.currentDate" :key="item.date" class="h6 line-height-6 flex-1 flex justify-between pr2 pl2">
@@ -19,10 +18,11 @@
         v-for="item of store.currentDate"
         :key="item.date"
         ref="boxRef"
-        class="flex-1 min-h-20px"
+        class="flex-1 min-h-20px flex flex-col gap-1px"
         :data-date="item.date"
         @dragover="onDragover"
         @drop="onDrop"
+        @dblclick="addAllDayTask(item.date)"
       >
         <WeekAllDayTask
           v-for="allDayItem of isAllDay[item.date]"
@@ -42,7 +42,7 @@ import { useWeek } from '@/hooks/useWeek';
 import WeekAllDayTask from './week-all-day-task.vue';
 import { ref, nextTick, onMounted, onUnmounted } from 'vue';
 
-const { store, setCalendarView, currentDay } = useStore();
+const { store, setCalendarView, currentDay, addAllDayTask } = useStore();
 const { isAllDay, onDragover, onDrop, taskBoxWidth } = useWeek();
 
 const onDblclick = (date: string) => {

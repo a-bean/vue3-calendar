@@ -3,11 +3,11 @@
     <div class="h100% flex flex-col select-none flex-1">
       <div class="b-t-solid b-t-1 b-b-solid b-b-3 b-#ccc flex flex-items-center font-size-3">
         <div class="w15 text-right line-height-6 color-#aaa pr-1">全天</div>
-        <div class="flex-1 color-#fff fw-600 flex flex-col gap-1px">
+        <div class="flex-1 color-#fff fw-600 flex flex-col gap-1px" @dblclick="addAllDayTask(store.currentDate[0].date)">
           <div
             v-for="item of isAllDay"
             :key="item.id"
-            class="b-rd h5 line-height-5 pl-1.5"
+            class="b-rd h5 line-height-5 pl-1.5 bg-blue"
             :class="`bg-${item.color}`"
             :style="{ backgroundColor: item.color }"
           >
@@ -32,6 +32,9 @@ import { useDay } from '@/hooks/useDay';
 import TimeScale from '@/components/time-scale/time-scale.vue';
 import dayBody from './components/day-body.vue';
 import MinCalendar from '../min-calendar/index.vue';
+import { useStore } from '@/hooks/useStore';
+
+const { store, addAllDayTask } = useStore();
 
 const { formatData, isAllDay } = useDay();
 </script>

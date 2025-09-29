@@ -74,6 +74,8 @@ export const useWeek = () => {
 
   const isAllDay = computed(() => {
     const tempData = cloneDeep(store.value.data);
+
+    // 过滤出全天任务
     for (const dataKey in tempData) {
       if (!Object.prototype.hasOwnProperty.call(tempData, dataKey)) continue;
       tempData[dataKey] = tempData[dataKey].filter((item) => {
@@ -85,6 +87,7 @@ export const useWeek = () => {
       });
     }
 
+    // 遍历所有日期的任务数据
     for (const dataKey in tempData) {
       if (!Object.prototype.hasOwnProperty.call(tempData, dataKey)) continue;
       const dataList = tempData[dataKey];
@@ -92,20 +95,22 @@ export const useWeek = () => {
       for (let i = 0; i < dataList.length; i++) {
         const { end } = dataList[i];
         const start = isBefore(dataList[i].start, store.value.currentDate[0].date) ? store.value.currentDate[0].date : dataList[i].start;
-        // 例如：end是2025-09-27 00:00，start是2025-09-26 00:00，那么interval就不用加1，end是2025-09-27 01:00，start是2025-09-26 00:00，那么interval就得加1
+
         const endHour = getDate({ date: end, format: 'HH:mm' });
         const interval1 = getTimeInterval({ bigDate: end, smallDate: start, unit: 'day' }) + (endHour === '00:00' ? 0 : 1);
         const offset = 7 - getWeekIndex(dataKey);
+
         // 在当前行补充数据（占位，用id为string，后续显示隐藏掉）
         for (let l = 1; l < offset && interval1 > l; l++) {
           const newDataKey = getDate({ date: start, add: l, format: 'YYYY-MM-DD' });
           if (!tempData[newDataKey]) {
             tempData[newDataKey] = [];
           }
-          tempData[newDataKey].unshift({ id: '-1', title: '占位', start: '', end: '' });
+          tempData[newDataKey].splice(i, 0, { id: '-1', title: '占位', start: '', end: '' });
         }
       }
     }
+    console.log(tempData);
     return tempData;
   });
 
