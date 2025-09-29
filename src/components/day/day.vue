@@ -10,6 +10,7 @@
             class="b-rd h5 line-height-5 pl-1.5 bg-blue"
             :class="`bg-${item.color}`"
             :style="{ backgroundColor: item.color }"
+            @dblclick.stop=""
           >
             {{ item.title }}
           </div>

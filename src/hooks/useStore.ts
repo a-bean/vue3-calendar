@@ -84,6 +84,7 @@ export const useStore = () => {
   };
 
   const addAllDayTask = (day: string) => {
+    console.log('🚀 ~ addAllDayTask ~ day:', day);
     if (!store.value.data[day]) {
       store.value.data[day] = [];
     }
