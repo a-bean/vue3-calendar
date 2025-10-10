@@ -21,7 +21,9 @@
               }"
             />
           </template>
-          <template #default><slot :data="item"></slot></template>
+          <template #default>
+            <slot name="popover" :data="item"></slot>
+          </template>
         </Popover>
       </template>
     </template>

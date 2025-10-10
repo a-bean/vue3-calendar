@@ -13,7 +13,6 @@
           class="text-center flex items-center justify-center aspect-square cursor-pointer"
           :class="{
             'color-#ccc': !item.isCurrentMonth,
-            'b-b-solid b-b-1 b-red': item.isFirstDayOfLunarMonth,
             'bg-red color-white b-rd-50%': item.isToday,
             'bg-gray b-rd-50% ': item.date === currentDay && !item.isToday,
           }"

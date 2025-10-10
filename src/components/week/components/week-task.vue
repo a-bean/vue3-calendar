@@ -3,7 +3,7 @@
     class="task-default-opacity day-task"
     :class="{ 'task-active-opacity': props.data?.id === store.selectedTaskId }"
     :style="{ top: `${top}%`, height: `${height}%`, backgroundColor: props.data.color, borderColor: props.data.color }"
-    @click="selectedTask(props.data.id as number)"
+    @click="selectedTask(props.data.id as number, props.data as TData)"
     @mousedown="(e) => mousedown(e, props.data, ETaskMoveType.MOVE_WHOLE)"
   >
     <!--上拖拉的线-->
@@ -18,8 +18,7 @@
       @mousedown.stop="(e) => mousedown(e, props.data, ETaskMoveType.MOVE_BOTTOM)"
       @mouseenter="mouseenter(ETaskMoveType.MOVE_BOTTOM)"
     ></div>
-    <div>{{ getDate({ date: props.data.start, format: 'MM-DD HH:mm' }) }}</div>
-    <div>{{ getDate({ date: props.data.end, format: 'MM-DD HH:mm' }) }}</div>
+    <div>{{ getDate({ date: props.data.start, format: 'HH:mm' }) }}</div>
     <div class="font-500">{{ props.data.title }}</div>
   </div>
 </template>

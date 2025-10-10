@@ -17,8 +17,8 @@
         <div>{{ item.week }}</div>
       </div>
     </div>
-    <div class="w100% flex font-size-2.5 b-t-solid b-b-solid b-#ccc b-t-1 b-b-3">
-      <div class="w15 text-right color-#ccc pl2 pr2 box-border">全天</div>
+    <div class="w100% flex b-t-solid b-b-solid b-#ccc b-t-1 b-b-3">
+      <div class="w15 text-right color-#ccc pl2 pr2 box-border font-size-2.5">全天</div>
       <div
         v-for="item of store.currentDate"
         :key="item.date"
@@ -29,12 +29,16 @@
         @drop="onDrop"
         @dblclick="addAllDayTask(item.date)"
       >
-        <WeekAllDayTask
-          v-for="allDayItem of isAllDay[item.date]"
-          :key="allDayItem.id"
-          :data="allDayItem"
-          :style="{ width: getMonthTaskWidth(allDayItem, item.date) }"
-        />
+        <template v-for="allDayItem of isAllDay[item.date]" :key="allDayItem.id">
+          <Popover>
+            <template #trigger>
+              <WeekAllDayTask class="font-size-2.5" :data="allDayItem" :style="{ width: getMonthTaskWidth(allDayItem, item.date) }" />
+            </template>
+            <template #default>
+              <slot name="popover" :data="item"></slot>
+            </template>
+          </Popover>
+        </template>
       </div>
     </div>
   </div>
@@ -46,6 +50,7 @@ import { ECalendarType, TData } from '@/types';
 import { useWeek } from '@/hooks/useWeek';
 import WeekAllDayTask from './week-all-day-task.vue';
 import { ref, nextTick, onMounted, onUnmounted } from 'vue';
+import Popover from '@/components/popover/popover.vue';
 
 const { store, setCalendarView, currentDay, addAllDayTask } = useStore();
 const { isAllDay, onDragover, onDrop, taskBoxWidth } = useWeek();

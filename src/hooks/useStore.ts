@@ -7,6 +7,7 @@ type TStore = {
   calendarView: ECalendarType;
   currentDate: TDate[];
   selectedTaskId: number;
+  selectedTask: TData | null;
 };
 
 const store = ref<TStore>({
@@ -14,6 +15,7 @@ const store = ref<TStore>({
   data: {},
   currentDate: [],
   selectedTaskId: 0,
+  selectedTask: null,
 });
 
 const onTaskChange = ref<(data: TData) => void>();
@@ -48,7 +50,8 @@ export const useStore = () => {
     currentDay.value = store.value.currentDate[0].date;
   };
 
-  const selectedTask = (id: number) => {
+  const selectedTask = (id: number, data: TData) => {
+    store.value.selectedTask = data;
     store.value.selectedTaskId = id;
   };
 
@@ -84,7 +87,6 @@ export const useStore = () => {
   };
 
   const addAllDayTask = (day: string) => {
-    console.log('🚀 ~ addAllDayTask ~ day:', day);
     if (!store.value.data[day]) {
       store.value.data[day] = [];
     }

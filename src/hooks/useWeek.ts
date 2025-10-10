@@ -110,7 +110,6 @@ export const useWeek = () => {
         }
       }
     }
-    console.log(tempData);
     return tempData;
   });
 

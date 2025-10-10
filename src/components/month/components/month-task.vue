@@ -5,14 +5,14 @@
     :style="{ backgroundColor: props.data?.color }"
     draggable="true"
     :data-id="props.data?.id"
-    @click="selectedTask(props.data!.id as number)"
+    @click="selectedTask(props.data!.id as number, props.data as TData)"
     @dragstart="(e) => onDragStart(e, props.data)"
   >
     <div class="flex flex-items-center">
       <div class="h1.4 w1.4 b-rd-50% mr1 bg-white"></div>
       {{ props.data?.title }}
     </div>
-    <div>{{ getDate({ date: props.data?.start, format: 'MM-DD' }) }}-{{ getDate({ date: props.data?.end, format: 'MM-DD' }) }}</div>
+    <!-- <div>{{ getDate({ date: props.data?.start, format: 'MM-DD' }) }}</div> -->
   </div>
 </template>
 <script setup lang="ts">

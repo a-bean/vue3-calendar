@@ -1,10 +1,14 @@
 <template>
   <div class="w100% h100% flex flex-col select-none">
-    <WeekHeader />
+    <WeekHeader>
+      <template #popover="slotProps">
+        <slot name="popover" :data="slotProps.data"></slot>
+      </template>
+    </WeekHeader>
     <div ref="bodyRef" class="flex-1 flex overflow-scroll pt-1.6">
       <TimeScale class="w15" />
       <WeekBody v-slot="slotProps">
-        <slot :data="slotProps.data"></slot>
+        <slot name="popover" :data="slotProps.data"></slot>
       </WeekBody>
     </div>
   </div>

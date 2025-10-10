@@ -1,8 +1,13 @@
 <template>
   <div class="h100% w100%">
     <CalendarHeader />
-    <component :is="showComponent" v-slot="slotProps">
-      <slot :data="slotProps.data"></slot>
+    <component :is="showComponent">
+      <template #popover="slotProps">
+        <slot name="popover" :data="slotProps.data"></slot>
+      </template>
+      <template #day-detail="slotProps">
+        <slot name="day-detail" :data="slotProps.data"></slot>
+      </template>
     </component>
   </div>
 </template>

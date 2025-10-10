@@ -1,7 +1,7 @@
 <template>
   <div ref="popoverRef" @dblclick.stop="show">
     <slot name="trigger"></slot>
-    <div class="position-fixed z-10000" :style="{ top: top, left: left }">
+    <div class="position-fixed z-100" :style="{ top: top, left: left }">
       <slot></slot>
     </div>
   </div>
@@ -19,10 +19,10 @@ const setPosition = () => {
   const secondChild = popoverRef.value?.children[1].getBoundingClientRect();
 
   // 当右边能放下时，放右边，如果右边放不下，在考虑放左边，当左边能放下时，放左边，放不下再考虑放上边，放不下再考虑放下边，放不下再考虑放下边，放不下再放中间
-  const r = firstChild.left + firstChild.width + secondChild.width;
-  const l = firstChild.left - secondChild.width;
-  const t = firstChild.top - secondChild.height;
-  const b = firstChild.top + firstChild.height + secondChild.height;
+  // const r = firstChild.left + firstChild.width + secondChild.width;
+  // const l = firstChild.left - secondChild.width;
+  // const t = firstChild.top - secondChild.height;
+  // const b = firstChild.top + firstChild.height + secondChild.height;
 
   const positionFn = {
     top: () => {
@@ -51,21 +51,21 @@ const setPosition = () => {
     },
   };
 
-  if (r < window.innerWidth) {
-    return positionFn.right();
-  }
+  // if (r < window.innerWidth) {
+  //   return positionFn.right();
+  // }
 
-  if (l > 0) {
-    return positionFn.left();
-  }
+  // if (l > 0) {
+  //   return positionFn.left();
+  // }
 
-  if (t > 0) {
-    return positionFn.top();
-  }
+  // if (t > 0) {
+  //   return positionFn.top();
+  // }
 
-  if (b < window.innerHeight) {
-    return positionFn.bottom();
-  }
+  // if (b < window.innerHeight) {
+  //   return positionFn.bottom();
+  // }
 
   return positionFn.center();
 };
@@ -75,7 +75,7 @@ const show = () => {
 };
 
 document.addEventListener('click', (e) => {
-  if (popoverRef.value && !popoverRef.value.contains(e.target)) {
+  if (popoverRef.value && !popoverRef.value.contains(e.target as Node)) {
     top.value = '10000px';
   }
 });

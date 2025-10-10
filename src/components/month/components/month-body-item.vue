@@ -45,7 +45,9 @@
         </Popover>
       </template>
 
-      <div v-if="surplusTaskCount > 0" class="font-size-2.8 pl-2 pr-2">还有{{ surplusTaskCount }}项...</div>
+      <div v-if="surplusTaskCount > 0" class="font-size-2.8 pl-2 pr-2" @dblclick.stop="onDblclick(props.data.date)">
+        还有{{ surplusTaskCount }}项...
+      </div>
     </div>
   </div>
 </template>

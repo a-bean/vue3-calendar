@@ -5,8 +5,7 @@
     :style="{ backgroundColor: props.data?.color }"
     draggable="true"
     :data-id="props.data?.id"
-    @click.stop="selectedTask(props.data!.id as number)"
-    @dblclick.stop=""
+    @click.stop="selectedTask(props.data!.id as number, props.data as TData)"
     @dragstart="(e) => onDragStart(e, props.data)"
   >
     {{ props.data?.title }}
