@@ -82,11 +82,31 @@ export const findTaskById = (idToFind: number, data: { [key: string]: TData[] })
   return null;
 };
 
+/**
+ * @function : getEffectiveEndTime
+ * @description : 获取任务的有效结束时间，如果时间间隔小于15分钟则按15分钟计算
+ * @param {TData} task
+ * @return {number}
+ */
+export const getEffectiveEndTime = (task: TData): number => {
+  const startTime = new Date(task.start).getTime();
+  const endTime = new Date(task.end).getTime();
+  const duration = endTime - startTime;
+  const fifteenMinutes = 15 * 60 * 1000; // 15分钟的毫秒数
+
+  // 如果时间间隔小于15分钟，则按15分钟计算
+  if (duration < fifteenMinutes) {
+    return startTime + fifteenMinutes;
+  }
+
+  return endTime;
+};
+
 const doSchedulesOverlap = (schedule1: TData, schedule2: TData) => {
   const start1 = new Date(schedule1.start).getTime();
-  const end1 = new Date(schedule1.end).getTime();
+  const end1 = getEffectiveEndTime(schedule1);
   const start2 = new Date(schedule2.start).getTime();
-  const end2 = new Date(schedule2.end).getTime();
+  const end2 = getEffectiveEndTime(schedule2);
   return start1 < end2 && end1 > start2;
 };
 
@@ -122,7 +142,7 @@ const calculateTaskLayout = (tasks: TData[]): TData[] => {
   sortedTasks.forEach((task) => {
     timeline.push(
       { time: new Date(task.start).getTime(), type: 'start', taskId: task.id },
-      { time: new Date(task.end).getTime(), type: 'end', taskId: task.id }
+      { time: getEffectiveEndTime(task), type: 'end', taskId: task.id }
     );
   });
   timeline.sort((a, b) => a.time - b.time);

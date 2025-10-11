@@ -8,13 +8,13 @@
   >
     <!--上拖拉的线-->
     <div
-      class="day-drag-line top--1.5"
+      class="day-drag-line top--0.5"
       @mousedown.stop="(e) => mousedown(e, props.data, ETaskMoveType.MOVE_TOP)"
       @mouseenter="mouseenter(ETaskMoveType.MOVE_TOP)"
     ></div>
     <!--下拖拉的线-->
     <div
-      class="day-drag-line bottom--1.5"
+      class="day-drag-line bottom--0.5"
       @mousedown.stop="(e) => mousedown(e, props.data, ETaskMoveType.MOVE_BOTTOM)"
       @mouseenter="mouseenter(ETaskMoveType.MOVE_BOTTOM)"
     ></div>
@@ -28,6 +28,7 @@ import { getDate, isBefore } from '@/date';
 import { ONE_HOUR_HEIGHT, ETaskMoveType } from '@/config';
 import { useWeek } from '@/hooks/useWeek';
 import { useStore } from '@/hooks/useStore';
+import { getEffectiveEndTime } from '@/utils';
 import { TData } from '@/types';
 
 const props = defineProps<{
@@ -67,8 +68,10 @@ const height = computed(() => {
   if (endIsBiggerThanToday) {
     endTimeHour = '24';
   } else {
-    endTimeHour = getDate({ date: props.data.end, format: 'HH' });
-    endTimeMinutes = getDate({ date: props.data.end, format: 'mm' });
+    // 使用有效结束时间（考虑15分钟最小间隔）
+    const effectiveEndTime = new Date(getEffectiveEndTime(props.data));
+    endTimeHour = getDate({ date: effectiveEndTime.toISOString(), format: 'HH' });
+    endTimeMinutes = getDate({ date: effectiveEndTime.toISOString(), format: 'mm' });
   }
 
   return (
@@ -80,7 +83,7 @@ const height = computed(() => {
 </script>
 <style>
 .day-task {
-  @apply w100% bg-blue font-size-3 color-white box-border position-absolute p1;
+  @apply w100% bg-blue font-size-3 color-white box-border position-absolute;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   /* 移除影响位置变化的动画，只保留阴影和透明度动画 */

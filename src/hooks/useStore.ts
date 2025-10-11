@@ -51,6 +51,7 @@ export const useStore = () => {
   };
 
   const selectedTask = (id: number, data: TData) => {
+    console.log('🚀 ~ selectedTask ~ data:', data.end);
     store.value.selectedTask = data;
     store.value.selectedTaskId = id;
   };

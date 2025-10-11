@@ -1,24 +1,24 @@
 <template>
   <div
-    class="task-default-opacity w100% bg-blue b-rd-2 font-size-3 color-white b-l-solid b-l-4 b-blue box-border position-absolute p1"
+    class="task-default-opacity w100% bg-blue b-rd-2 font-size-3 color-white b-l-solid b-l-4 b-blue box-border position-absolute"
     :class="{ 'task-active-opacity': props.data?.id === store.selectedTaskId }"
     :style="{ top: `${top}%`, height: `${height}%`, backgroundColor: props.data.color, borderColor: props.data.color }"
-    @click="selectedTask(props.data.id as number, props.data as TData)"
+    @click="selectedTask(props.data.id as number, props.data)"
     @mousedown="(e) => mousedown(e, props.data.id as number, ETaskMoveType.MOVE_WHOLE)"
   >
     <!--上拖拉的线-->
     <div
-      class="h3 w100% position-absolute cursor-row-resize top--1.5"
+      class="h1 w100% position-absolute cursor-row-resize top--0.5"
       @mousedown.stop="(e) => mousedown(e, props.data.id as number, ETaskMoveType.MOVE_TOP)"
       @mouseenter="mouseenter(ETaskMoveType.MOVE_TOP)"
     ></div>
     <!--下拖拉的线-->
     <div
-      class="h3 w100% position-absolute cursor-row-resize bottom--1.5"
+      class="h1 w100% position-absolute cursor-row-resize bottom--0.5"
       @mousedown.stop="(e) => mousedown(e, props.data.id as number, ETaskMoveType.MOVE_BOTTOM)"
       @mouseenter="mouseenter(ETaskMoveType.MOVE_BOTTOM)"
     ></div>
-    <div>{{ getDate({ date: props.data.start, format: 'HH:mm' }) }}</div>
+    <div>{{ getDate({ date: props.data.start, format: 'HH:mm' }) }} - {{ getDate({ date: props.data.end, format: 'HH:mm' }) }}</div>
     <div class="font-500">{{ props.data.title }}</div>
   </div>
 </template>
@@ -28,6 +28,7 @@ import { getDate, isBefore } from '@/date';
 import { ONE_HOUR_HEIGHT, ETaskMoveType } from '@/config';
 import { useDay } from '@/hooks/useDay';
 import { useStore } from '@/hooks/useStore';
+import { getEffectiveEndTime } from '@/utils';
 import { TData } from '@/types';
 
 const { mousedown, mouseenter } = useDay();
@@ -66,14 +67,17 @@ const height = computed(() => {
   if (endIsBiggerThanToday) {
     endTimeHour = '24';
   } else {
-    endTimeHour = getDate({ date: props.data.end, format: 'HH' });
-    endTimeMinutes = getDate({ date: props.data.end, format: 'mm' });
+    // 使用有效结束时间（考虑15分钟最小间隔）
+    const effectiveEndTime = new Date(getEffectiveEndTime(props.data));
+    endTimeHour = getDate({ date: effectiveEndTime.toISOString(), format: 'HH' });
+    endTimeMinutes = getDate({ date: effectiveEndTime.toISOString(), format: 'mm' });
   }
 
-  return (
+  const h =
     Number(endTimeHour) * ONE_HOUR_HEIGHT +
     Number(endTimeMinutes) * (ONE_HOUR_HEIGHT / 60) -
-    (Number(startTimeHour) * ONE_HOUR_HEIGHT + Number(startTimeMinutes) * (ONE_HOUR_HEIGHT / 60))
-  );
+    (Number(startTimeHour) * ONE_HOUR_HEIGHT + Number(startTimeMinutes) * (ONE_HOUR_HEIGHT / 60));
+
+  return h;
 });
 </script>

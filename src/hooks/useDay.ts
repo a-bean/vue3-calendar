@@ -27,7 +27,8 @@ export const useDay = () => {
     });
   });
 
-  let isDragging = false;
+  let isMousedown = false;
+  let isMousemove = false;
   let initialY: number;
   let targetId: number;
   let moveType: ETaskMoveType;
@@ -37,8 +38,11 @@ export const useDay = () => {
   };
 
   const mousemove = (e: MouseEvent) => {
-    if (!isDragging) return;
+    if (!isMousedown) return;
+    // 判断如果是initialY没有变化 就直接return
+    if (e.clientY - initialY === 0) return;
 
+    isMousemove = true;
     // 使用 requestAnimationFrame 优化性能
     requestAnimationFrame(() => {
       const { date } = store.value.currentDate[0];
@@ -65,7 +69,14 @@ export const useDay = () => {
   };
 
   const mouseup = () => {
-    isDragging = false;
+    isMousedown = false;
+    if (!isMousemove) {
+      // 没有上下移动就不需要执行后续逻辑了
+      window.removeEventListener('mouseup', mouseup);
+      window.removeEventListener('mousemove', mousemove);
+      return;
+    }
+    isMousemove = false;
 
     // 滑动后调整开始或者结束时间，将时间的 分钟 总是调整为15的的倍数
     const { date } = store.value.currentDate[0];
@@ -111,8 +122,9 @@ export const useDay = () => {
   };
 
   const mousedown = (e: MouseEvent, id: number, type: ETaskMoveType) => {
+    console.log('🚀 ~ mousedown ~ id:', id);
     targetId = id;
-    isDragging = true;
+    isMousedown = true;
     initialY = e.clientY;
 
     changeMoveType(type);
