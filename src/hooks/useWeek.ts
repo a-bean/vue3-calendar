@@ -17,6 +17,8 @@ let targetId: number;
 let moveType: ETaskMoveType;
 // 用于跨日期的task，记录鼠标点击位置于开头时间的偏移天数
 let interval: number;
+// 累积分钟的浮点余量，避免格式化丢弃秒导致的向上移动“变快”现象
+let minuteAccumulator = 0;
 
 const taskBoxWidth = ref<number>(); // 记录任务盒子的宽度
 
@@ -121,7 +123,7 @@ export const useWeek = () => {
   const mousemove = (e: MouseEvent) => {
     if (!isMousedown) return;
     // 判断如果是initialY没有变化 就直接return
-    if (e.clientY - initialY === 0) return;
+    if ((e as MouseEvent).movementY === 0 && e.clientY - initialY === 0) return;
 
     isMousemove = true;
     // 使用 requestAnimationFrame 优化性能
@@ -138,21 +140,27 @@ export const useWeek = () => {
         }
       }
 
+      // 动态计算像素与分钟的比例，保持与容器当前高度一致
       const everyPxOfMinute = 60 / (taskBodyHeight.value * (ONE_HOUR_HEIGHT / 100));
-      const incrementalTime = everyPxOfMinute * (e.clientY - initialY);
+      // 优先使用 movementY（相对上一帧的位移，避免页面/容器滚动影响），回退到 clientY 差值
+      const deltaY = (e as MouseEvent).movementY ?? e.clientY - initialY;
+      const incrementalMinutesFloat = everyPxOfMinute * deltaY;
+      minuteAccumulator += incrementalMinutesFloat;
 
-      const timesDiff = getTimeInterval({ bigDate: target!.end, smallDate: target!.start, unit: 'minute' });
-      if (timesDiff <= MIN_HEIGHT && e.clientY > initialY && moveType === ETaskMoveType.MOVE_TOP) return;
-      if (timesDiff <= MIN_HEIGHT && e.clientY < initialY && moveType === ETaskMoveType.MOVE_BOTTOM) return;
-
-      const adjustTime = (prop: 'start' | 'end') => {
-        target[prop] = getDate({ date: target[prop], add: incrementalTime, type: 'minute', format: 'YYYY-MM-DD HH:mm' });
-      };
-      if (moveType === ETaskMoveType.MOVE_TOP || moveType === ETaskMoveType.MOVE_WHOLE) {
-        adjustTime('start');
-      }
-      if (moveType === ETaskMoveType.MOVE_BOTTOM || moveType === ETaskMoveType.MOVE_WHOLE) {
-        adjustTime('end');
+      // 仅在达到整分钟时才更新，避免格式化到 'HH:mm' 时秒被截断导致的负方向偏差
+      const wholeMinutes = minuteAccumulator < 0 ? Math.ceil(minuteAccumulator) : Math.floor(minuteAccumulator);
+      if (wholeMinutes !== 0) {
+        const adjustTime = (prop: 'start' | 'end') => {
+          target[prop] = getDate({ date: target[prop], add: wholeMinutes, type: 'minute', format: 'YYYY-MM-DD HH:mm' });
+        };
+        if (moveType === ETaskMoveType.MOVE_TOP || moveType === ETaskMoveType.MOVE_WHOLE) {
+          adjustTime('start');
+        }
+        if (moveType === ETaskMoveType.MOVE_BOTTOM || moveType === ETaskMoveType.MOVE_WHOLE) {
+          adjustTime('end');
+        }
+        // 去掉已消费的整分钟，保留小数部分用于后续累积
+        minuteAccumulator -= wholeMinutes;
       }
 
       initialY = e.clientY;
@@ -173,10 +181,12 @@ export const useWeek = () => {
     const oldDate = JSON.parse(JSON.stringify(target!));
     const startRemainder = Number(getDate({ date: target!.start, format: 'mm' })) % BEST_TIME_SCALE;
     const endRemainder = Number(getDate({ date: target!.end, format: 'mm' })) % BEST_TIME_SCALE;
+
     const adjustTime = (remainder: number, prop: 'start' | 'end') => {
       const adjustValue = remainder < Math.round(BEST_TIME_SCALE / 2) ? -remainder : BEST_TIME_SCALE - remainder;
       target[prop] = getDate({ date: target[prop], add: adjustValue, type: 'minute', format: 'YYYY-MM-DD HH:mm' });
     };
+
     if (moveType === ETaskMoveType.MOVE_TOP || moveType === ETaskMoveType.MOVE_WHOLE) {
       adjustTime(startRemainder, 'start');
     }

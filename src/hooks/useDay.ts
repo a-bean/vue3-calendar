@@ -4,7 +4,6 @@ import { getTimeInterval, getDate } from '@/date';
 import { groupSchedulesByOverlap } from '@/utils';
 import { useStore } from '@/hooks/useStore';
 
-const MIN_HEIGHT = 15;
 const BEST_TIME_SCALE = 15;
 const taskBodyHeight = ref(0);
 const { store, onTaskChange } = useStore();
@@ -32,6 +31,9 @@ export const useDay = () => {
   let initialY: number;
   let targetId: number;
   let moveType: ETaskMoveType;
+  // 每像素对应的分钟数改为在 mousemove 时动态计算，避免初始高度为 0 或窗口尺寸变化导致比例错误
+  // 累积分钟的浮点余量，避免格式化丢弃秒导致的向上移动“变快”现象
+  let minuteAccumulator = 0;
 
   const changeMoveType = (type: ETaskMoveType) => {
     moveType = type;
@@ -40,28 +42,36 @@ export const useDay = () => {
   const mousemove = (e: MouseEvent) => {
     if (!isMousedown) return;
     // 判断如果是initialY没有变化 就直接return
-    if (e.clientY - initialY === 0) return;
+    if ((e as MouseEvent).movementY === 0 && e.clientY - initialY === 0) return;
 
     isMousemove = true;
     // 使用 requestAnimationFrame 优化性能
     requestAnimationFrame(() => {
       const { date } = store.value.currentDate[0];
       const target = store.value.data[date].find((item) => item.id === targetId)!;
+      // 动态计算像素与分钟的比例，保持与容器当前高度一致
       const everyPxOfMinute = 60 / (taskBodyHeight.value * (ONE_HOUR_HEIGHT / 100));
-      const incrementalTime = everyPxOfMinute * (e.clientY - initialY);
+      // 优先使用 movementY（相对上一帧的位移，避免页面/容器滚动影响），回退到 clientY 差值
+      const deltaY = (e as MouseEvent).movementY ?? e.clientY - initialY;
+      const incrementalMinutesFloat = everyPxOfMinute * deltaY;
+      minuteAccumulator += incrementalMinutesFloat;
 
-      const timesDiff = getTimeInterval({ bigDate: target.end, smallDate: target.start, unit: 'minute' });
-      if (timesDiff <= MIN_HEIGHT && e.clientY > initialY && moveType === ETaskMoveType.MOVE_TOP) return;
-      if (timesDiff <= MIN_HEIGHT && e.clientY < initialY && moveType === ETaskMoveType.MOVE_BOTTOM) return;
+      // 仅在达到整分钟时才更新，避免格式化到 'HH:mm' 时秒被截断导致的负方向偏差
+      const wholeMinutes = minuteAccumulator < 0 ? Math.ceil(minuteAccumulator) : Math.floor(minuteAccumulator);
+      if (wholeMinutes !== 0) {
+        const adjustTime = (prop: 'start' | 'end') => {
+          target[prop] = getDate({ date: target[prop], add: wholeMinutes, type: 'minute', format: 'YYYY-MM-DD HH:mm' });
+        };
 
-      const adjustTime = (prop: 'start' | 'end') => {
-        target[prop] = getDate({ date: target[prop], add: incrementalTime, type: 'minute', format: 'YYYY-MM-DD HH:mm' });
-      };
-      if (moveType === ETaskMoveType.MOVE_TOP || moveType === ETaskMoveType.MOVE_WHOLE) {
-        adjustTime('start');
-      }
-      if (moveType === ETaskMoveType.MOVE_BOTTOM || moveType === ETaskMoveType.MOVE_WHOLE) {
-        adjustTime('end');
+        if (moveType === ETaskMoveType.MOVE_TOP || moveType === ETaskMoveType.MOVE_WHOLE) {
+          adjustTime('start');
+        }
+        if (moveType === ETaskMoveType.MOVE_BOTTOM || moveType === ETaskMoveType.MOVE_WHOLE) {
+          adjustTime('end');
+        }
+
+        // 去掉已消费的整分钟，保留小数部分用于后续累积
+        minuteAccumulator -= wholeMinutes;
       }
 
       initialY = e.clientY;
@@ -122,7 +132,6 @@ export const useDay = () => {
   };
 
   const mousedown = (e: MouseEvent, id: number, type: ETaskMoveType) => {
-    console.log('🚀 ~ mousedown ~ id:', id);
     targetId = id;
     isMousedown = true;
     initialY = e.clientY;
